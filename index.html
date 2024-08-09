@@ -83,7 +83,7 @@
         <div id="alert-list"></div>
     </main>
 
-    <audio id="alerta-som" src="alerta.wav" preload="auto"></audio>
+    <audio id="alerta-som" src="alarme.wav" preload="auto"></audio>
     <audio id="hidratacao-som" src="hidratacao.wav" preload="auto"></audio>
 
     <script>
@@ -128,6 +128,12 @@
                 alertElement.className = "alert";
                 alertElement.innerHTML = alerta.mensagem;
                 alertList.appendChild(alertElement);
+
+                // Remove o alerta após 1 minuto
+                setTimeout(() => {
+                    alertElement.style.opacity = 0;
+                    setTimeout(() => alertElement.remove(), 20000); // Remove após 20 segundos
+                }, 60000); // Remove após 1 minuto
             });
         }
 
@@ -196,23 +202,25 @@
 
         function tocarAlarme(mensagem, tipo) {
             const audio = document.getElementById(tipo === "hidratacao" ? "hidratacao-som" : "alerta-som");
-            const alertList = document.getElementById("alert-list");
-
             audio.play();
+            console.log(`Tocando áudio para ${tipo}: ${mensagem}`); // Adiciona log para depuração
+
+            const alertList = document.getElementById("alert-list");
             const alertElement = document.createElement("div");
             alertElement.className = "alert";
             alertElement.innerHTML = mensagem;
             alertList.appendChild(alertElement);
 
+            // Remove o alerta após 1 minuto
             setTimeout(() => {
                 alertElement.style.opacity = 0;
                 setTimeout(() => alertElement.remove(), 20000); // Remove após 20 segundos
             }, 60000); // Remove após 1 minuto
         }
 
-        setInterval(atualizarRelogio, 1000); // Atualiza o relógio a cada segundo
-        carregarAlertas(); // Carrega alertas ao iniciar
-        carregarConfiguracaoHidratacao(); // Carrega configuração de hidratação ao iniciar
+        setInterval(atualizarRelogio, 1000);
+        carregarAlertas();
+        carregarConfiguracaoHidratacao();
     </script>
 </body>
 </html>
