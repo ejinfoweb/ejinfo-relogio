@@ -59,10 +59,17 @@
             font-weight: bold;
             color: #FFFFFF;
             text-shadow: 1px 1px 2px #000000;
+            position: relative;
+            animation: fadeOut 20s linear 0s forwards;
         }
         .highlight {
             background: #FFD700;
             color: #000;
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
         }
         #config-area {
             display: none;
@@ -139,20 +146,35 @@
     <audio id="hidratacao-som" src="hidratacao.wav" preload="auto"></audio>
 
     <script>
-        let alertas = [];
-        let alertaHidratacao = JSON.parse(localStorage.getItem('alertaHidratacao')) || { horaInicio: "07:30", horaFim: "22:00", intervalo: 120 };
+        const URL_ALERTAS = 'https://seunome.github.io/meu-relogio/alertas.txt';
+        const URL_HIDRATACAO = 'https://seunome.github.io/meu-relogio/hidratacao.txt';
 
-        function carregarAlertas() {
-            fetch('alertas.txt')
-                .then(response => response.text())
-                .then(data => {
-                    alertas = data.split('\n').map(line => {
-                        const [hora, mensagem] = line.split('|');
-                        return { hora, mensagem };
-                    }).filter(alerta => alerta.hora && alerta.mensagem);
-                    atualizarListaAlarmes();
-                })
-                .catch(error => console.error('Erro ao carregar os alertas:', error));
+        let alertas = [];
+        let alertaHidratacao = { horaInicio: "07:30", horaFim: "22:00", intervalo: 120 };
+
+        async function carregarAlertas() {
+            try {
+                const response = await fetch(URL_ALERTAS);
+                const data = await response.text();
+                alertas = data.trim().split('\n').map(line => {
+                    const [hora, mensagem] = line.split(',');
+                    return { hora, mensagem };
+                });
+                atualizarListaAlarmes();
+            } catch (error) {
+                console.error('Erro ao carregar os alertas:', error);
+            }
+        }
+
+        async function carregarConfiguracaoHidratacao() {
+            try {
+                const response = await fetch(URL_HIDRATACAO);
+                const data = await response.text();
+                const [horaInicio, horaFim, intervalo] = data.trim().split(',');
+                alertaHidratacao = { horaInicio, horaFim, intervalo: parseInt(intervalo) };
+            } catch (error) {
+                console.error('Erro ao carregar configuração de hidratação:', error);
+            }
         }
 
         function atualizarListaAlarmes() {
@@ -176,20 +198,11 @@
 
             if (hora && mensagem) {
                 alertas.push({ hora, mensagem });
+                atualizarListaAlarmes();
                 salvarAlertas();
             } else {
                 alert("Preencha todos os campos do alarme.");
             }
-        }
-
-        function salvarAlertas() {
-            const alertasTexto = alertas.map(alerta => `${alerta.hora}|${alerta.mensagem}`).join('\n');
-            fetch('alertas.txt', {
-                method: 'POST',
-                body: alertasTexto
-            })
-            .then(() => atualizarListaAlarmes())
-            .catch(error => console.error('Erro ao salvar os alertas:', error));
         }
 
         function editarAlarme(index) {
@@ -198,13 +211,20 @@
 
             if (hora && mensagem) {
                 alertas[index] = { hora, mensagem };
+                atualizarListaAlarmes();
                 salvarAlertas();
             }
         }
 
         function removerAlarme(index) {
             alertas.splice(index, 1);
+            atualizarListaAlarmes();
             salvarAlertas();
+        }
+
+        function salvarAlertas() {
+            // Esta função precisa de um back-end para salvar os alertas no arquivo GitHub
+            // Para uma solução real, você deve usar um back-end ou GitHub API como mencionado antes
         }
 
         function configurarHidratacao() {
@@ -214,10 +234,15 @@
 
             if (horaInicio && horaFim && intervalo) {
                 alertaHidratacao = { horaInicio, horaFim, intervalo: parseInt(intervalo) };
-                localStorage.setItem('alertaHidratacao', JSON.stringify(alertaHidratacao));
+                salvarConfiguracaoHidratacao();
             } else {
                 alert("Preencha todos os campos da configuração de hidratação.");
             }
+        }
+
+        function salvarConfiguracaoHidratacao() {
+            // Esta função precisa de um back-end para salvar a configuração de hidratação
+            // Para uma solução real, você deve usar um back-end ou GitHub API como mencionado antes
         }
 
         function toggleConfig() {
@@ -252,61 +277,61 @@
                 iconeFim = "☀️";
             } else {
                 periodo = "Noite";
-                iconeInicio = "🌃";
-                iconeFim = "🌃";
+                iconeInicio = "🌜";
+                iconeFim = "🌜";
             }
 
-            document.getElementById("data").innerText = `${diaSemana}, ${dia}/${mes}/${ano}`;
-            document.getElementById("relogio").innerText = `${hora.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
-            document.getElementById("periodo-text").innerText = periodo;
-            document.getElementById("periodo-icon").innerText = iconeInicio;
-            document.getElementById("periodo-icon-end").innerText = iconeFim;
+            document.getElementById("data").innerHTML = `${diaSemana} - ${dia.toString().padStart(2, "0")}/${mes.toString().padStart(2, "0")}/${ano}`;
+            document.getElementById("relogio").innerHTML = `<span style="font-family: 'Digital-7';">${hora.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</span>`;
+            document.getElementById("periodo-icon").textContent = iconeInicio;
+            document.getElementById("periodo-text").textContent = periodo;
+            document.getElementById("periodo-icon-end").textContent = iconeFim;
+
+            verificarAlertas(hora, minutos);
         }
 
-        function checarAlertas() {
+        function verificarAlertas(hora, minuto) {
+            const horaAtual = `${hora.toString().padStart(2, "0")}:${minuto.toString().padStart(2, "0")}`;
+
+            // Verifica alerta de hidratação
             const agora = new Date();
-            const horaAtual = agora.getHours();
-            const minutosAtual = agora.getMinutes();
-            const horaString = `${horaAtual.toString().padStart(2, '0')}:${minutosAtual.toString().padStart(2, '0')}`;
-            
+            const horaAtualHidratacao = `${agora.getHours().toString().padStart(2, "0")}:${agora.getMinutes().toString().padStart(2, "0")}`;
+            if (horaAtualHidratacao >= alertaHidratacao.horaInicio && horaAtualHidratacao <= alertaHidratacao.horaFim) {
+                const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
+                const inicio = parseInt(alertaHidratacao.horaInicio.split(":")[0]) * 60 + parseInt(alertaHidratacao.horaInicio.split(":")[1]);
+                const intervalo = alertaHidratacao.intervalo;
+                if ((tempoAtual - inicio) % intervalo === 0) {
+                    tocarAlarme("🚰 Atenção! Hora de beber água.\nVamos beber um copo de água.", "hidratacao");
+                }
+            }
+
+            // Verifica outros alertas
             alertas.forEach(alerta => {
-                if (alerta.hora === horaString) {
-                    document.getElementById('alerta-som').play();
-                    alert(`Alerta: ${alerta.mensagem}`);
+                if (horaAtual === alerta.hora) {
+                    tocarAlarme(alerta.mensagem, "alerta");
                 }
             });
         }
 
-        function checarHidratacao() {
-            const agora = new Date();
-            const horaAtual = agora.getHours();
-            const minutosAtual = agora.getMinutes();
-            const horaString = `${horaAtual.toString().padStart(2, '0')}:${minutosAtual.toString().padStart(2, '0')}`;
-            const [horaInicio, horaFim] = [alertaHidratacao.horaInicio, alertaHidratacao.horaFim];
-            
-            const horaInicioH = parseInt(horaInicio.split(':')[0]);
-            const horaFimH = parseInt(horaFim.split(':')[0]);
-            const horaAtualH = parseInt(horaString.split(':')[0]);
+        function tocarAlarme(mensagem, tipo) {
+            const audio = document.getElementById(tipo === "hidratacao" ? "hidratacao-som" : "alerta-som");
+            audio.play();
 
-            if ((horaAtualH > horaInicioH && horaAtualH < horaFimH) || (horaAtualH === horaInicioH && minutosAtual >= parseInt(horaInicio.split(':')[1])) || (horaAtualH === horaFimH && minutosAtual <= parseInt(horaFim.split(':')[1]))) {
-                const intervaloMinutos = alertaHidratacao.intervalo;
-                const ultimaHidracao = JSON.parse(localStorage.getItem('ultimaHidracao')) || { hora: null, minuto: null };
+            const alertList = document.getElementById("alert-list");
+            alertList.innerHTML = ''; // Remove alertas antigos
+            const alertElement = document.createElement("div");
+            alertElement.className = "alert highlight";
+            alertElement.innerHTML = mensagem;
+            alertList.appendChild(alertElement);
 
-                if (!ultimaHidracao.hora || !ultimaHidracao.minuto || (horaAtualH * 60 + minutosAtual - (parseInt(ultimaHidracao.hora) * 60 + parseInt(ultimaHidracao.minuto))) >= intervaloMinutos) {
-                    localStorage.setItem('ultimaHidracao', JSON.stringify({ hora: horaAtualH, minuto: minutosAtual }));
-                    document.getElementById('hidratacao-som').play();
-                    alert("Lembre-se de beber água!");
-                }
-            }
+            setTimeout(() => {
+                alertElement.remove(); // Remove o alerta após 1 minuto
+            }, 60000);
         }
 
-        setInterval(() => {
-            atualizarRelogio();
-            checarAlertas();
-            checarHidratacao();
-        }, 1000);
-
-        window.onload = carregarAlertas;
+        setInterval(atualizarRelogio, 1000); // Atualiza o relógio a cada segundo
+        carregarAlertas(); // Carrega os alertas ao carregar a página
+        carregarConfiguracaoHidratacao(); // Carrega a configuração de hidratação ao carregar a página
     </script>
 </body>
 </html>
