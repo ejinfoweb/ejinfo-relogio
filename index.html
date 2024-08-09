@@ -71,9 +71,26 @@
         .config-section {
             margin: 1vw;
             padding: 1vw;
-            border: 1px solid #ddd;
+            border: 1px solid #333;
             border-radius: 5px;
-            background-color: #f4f4f4;
+            background-color: #000000;
+            color: #FFFFFF;
+            text-align: left;
+        }
+        .config-section span {
+            display: block;
+            margin-bottom: 1vw;
+        }
+        .config-section button {
+            background: #333;
+            color: #FFF;
+            border: none;
+            padding: 0.5vw 1vw;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .config-section button:hover {
+            background: #555;
         }
         @media only screen and (max-width: 768px) {
             #data, #relogio, #periodo, #alert-list {
