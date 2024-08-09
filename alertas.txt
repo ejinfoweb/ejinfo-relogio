@@ -1,2 +1,6 @@
-00:39,Canabidiol
-00:41,Donaren
+09:00,Canabidiol
+19:00,Canabidiol
+08:00,Quetiapina e venlafaxina
+20:00,Quetiapina e venlafaxina
+18:00,Doniladuo
+21:00,Donaren
