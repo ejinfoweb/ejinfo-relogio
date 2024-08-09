@@ -62,10 +62,6 @@
             position: relative;
             animation: fadeOut 20s linear 0s forwards;
         }
-        .highlight {
-            background: #FFD700;
-            color: #000;
-        }
         @keyframes fadeOut {
             to {
                 opacity: 0;
@@ -91,8 +87,8 @@
     <audio id="hidratacao-som" src="hidratacao.wav" preload="auto"></audio>
 
     <script>
-        const URL_ALERTAS = 'https://seunome.github.io/meu-relogio/alertas.txt';
-        const URL_HIDRATACAO = 'https://seunome.github.io/meu-relogio/hidratacao.txt';
+        const URL_ALERTAS = 'alertas.txt'; // Atualize a URL se necessário
+        const URL_HIDRATACAO = 'hidratacao.txt'; // Atualize a URL se necessário
 
         let alertas = [];
         let alertaHidratacao = { horaInicio: "07:30", horaFim: "22:00", intervalo: 120 };
@@ -100,11 +96,13 @@
         async function carregarAlertas() {
             try {
                 const response = await fetch(URL_ALERTAS);
+                if (!response.ok) throw new Error('Erro na requisição dos alertas');
                 const data = await response.text();
                 alertas = data.trim().split('\n').map(line => {
                     const [hora, mensagem] = line.split(',');
                     return { hora, mensagem };
                 });
+                atualizarListaAlarmes(); // Atualiza a lista de alarmes após o carregamento
             } catch (error) {
                 console.error('Erro ao carregar os alertas:', error);
             }
@@ -113,6 +111,7 @@
         async function carregarConfiguracaoHidratacao() {
             try {
                 const response = await fetch(URL_HIDRATACAO);
+                if (!response.ok) throw new Error('Erro na requisição da configuração de hidratação');
                 const data = await response.text();
                 const [horaInicio, horaFim, intervalo] = data.trim().split(',');
                 alertaHidratacao = { horaInicio, horaFim, intervalo: parseInt(intervalo) };
@@ -147,8 +146,8 @@
             let iconeFim = "";
             if (hora >= 0 && hora < 6) {
                 periodo = "Madrugada";
-                iconeInicio = "🌙";
-                iconeFim = "🌙";
+                iconeInicio = "😴"; // Emoji de olhos dormindo
+                iconeFim = "😴";
             } else if (hora >= 6 && hora < 12) {
                 periodo = "Manhã";
                 iconeInicio = "🌅";
@@ -197,22 +196,23 @@
 
         function tocarAlarme(mensagem, tipo) {
             const audio = document.getElementById(tipo === "hidratacao" ? "hidratacao-som" : "alerta-som");
-            audio.play();
-
             const alertList = document.getElementById("alert-list");
+
+            audio.play();
             const alertElement = document.createElement("div");
-            alertElement.className = "alert highlight";
+            alertElement.className = "alert";
             alertElement.innerHTML = mensagem;
             alertList.appendChild(alertElement);
 
             setTimeout(() => {
-                alertElement.remove(); // Remove o alerta após 1 minuto
-            }, 60000);
+                alertElement.style.opacity = 0;
+                setTimeout(() => alertElement.remove(), 20000); // Remove após 20 segundos
+            }, 60000); // Remove após 1 minuto
         }
 
         setInterval(atualizarRelogio, 1000); // Atualiza o relógio a cada segundo
-        carregarAlertas(); // Carrega os alertas ao carregar a página
-        carregarConfiguracaoHidratacao(); // Carrega a configuração de hidratação ao carregar a página
+        carregarAlertas(); // Carrega alertas ao iniciar
+        carregarConfiguracaoHidratacao(); // Carrega configuração de hidratação ao iniciar
     </script>
 </body>
 </html>
