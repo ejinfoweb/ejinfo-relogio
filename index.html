@@ -56,7 +56,7 @@
             text-shadow: 1px 1px 2px #000000;
             position: relative;
             opacity: 1;
-            transition: opacity 20s linear;
+            transition: opacity 1s linear;
         }
         @media only screen and (max-width: 768px) {
             #data, #relogio, #periodo, #alert-list {
@@ -104,7 +104,6 @@
                     const [hora, mensagem] = line.split(',');
                     return { hora, mensagem };
                 });
-                atualizarListaAlarmes(); // Atualiza a lista de alarmes após o carregamento
             } catch (error) {
                 console.error('Erro ao carregar os alertas:', error);
             }
@@ -134,7 +133,7 @@
                 // Remove o alerta após 1 minuto
                 setTimeout(() => {
                     alertElement.style.opacity = 0;
-                    setTimeout(() => alertElement.remove(), 20000); // Remove após 20 segundos
+                    setTimeout(() => alertElement.remove(), 1000); // Remove após 1 segundo (transição de opacidade)
                 }, 60000); // Remove após 1 minuto
             });
         }
@@ -216,7 +215,7 @@
             // Remove o alerta após 1 minuto
             setTimeout(() => {
                 alertElement.style.opacity = 0;
-                setTimeout(() => alertElement.remove(), 20000); // Remove após 20 segundos
+                setTimeout(() => alertElement.remove(), 1000); // Remove após 1 segundo (transição de opacidade)
             }, 60000); // Remove após 1 minuto
         }
 
