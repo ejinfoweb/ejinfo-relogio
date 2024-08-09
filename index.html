@@ -43,10 +43,6 @@
             margin-top: 2vw;
             font-size: 5vw;
             color: #FFD700;
-            white-space: normal;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            word-wrap: break-word;
         }
         .alert {
             background: #FF4500;
@@ -54,17 +50,23 @@
             border-radius: 10px;
             padding: 2vw;
             margin: 2vw 0;
-            display: block;
             font-size: 5vw;
             font-weight: bold;
             color: #FFFFFF;
             text-shadow: 1px 1px 2px #000000;
             position: relative;
-            animation: fadeOut 20s linear 0s forwards;
+            opacity: 1;
+            transition: opacity 20s linear;
         }
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
+        @media only screen and (max-width: 768px) {
+            #data, #relogio, #periodo, #alert-list {
+                font-size: 6vw;
+            }
+            #relogio {
+                font-size: 8vw;
+            }
+            #alert-list {
+                font-size: 4.5vw;
             }
         }
     </style>
@@ -87,8 +89,8 @@
     <audio id="hidratacao-som" src="hidratacao.wav" preload="auto"></audio>
 
     <script>
-        const URL_ALERTAS = 'alertas.txt'; // Atualize a URL se necessário
-        const URL_HIDRATACAO = 'hidratacao.txt'; // Atualize a URL se necessário
+        const URL_ALERTAS = 'alertas.txt';
+        const URL_HIDRATACAO = 'hidratacao.txt';
 
         let alertas = [];
         let alertaHidratacao = { horaInicio: "07:30", horaFim: "22:00", intervalo: 120 };
@@ -202,9 +204,8 @@
 
         function tocarAlarme(mensagem, tipo) {
             const audio = document.getElementById(tipo === "hidratacao" ? "hidratacao-som" : "alerta-som");
-            audio.currentTime = 0; // Reinicia o áudio
+            audio.currentTime = 0; // Reseta o tempo do áudio
             audio.play();
-            console.log(`Tocando áudio para ${tipo}: ${mensagem}`); // Adiciona log para depuração
 
             const alertList = document.getElementById("alert-list");
             const alertElement = document.createElement("div");
@@ -219,9 +220,13 @@
             }, 60000); // Remove após 1 minuto
         }
 
-        setInterval(atualizarRelogio, 1000);
-        carregarAlertas();
-        carregarConfiguracaoHidratacao();
+        function iniciarRelogio() {
+            carregarAlertas();
+            carregarConfiguracaoHidratacao();
+            setInterval(atualizarRelogio, 1000);
+        }
+
+        window.onload = iniciarRelogio;
     </script>
 </body>
 </html>
