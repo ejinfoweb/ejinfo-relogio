@@ -202,6 +202,7 @@
 
         function tocarAlarme(mensagem, tipo) {
             const audio = document.getElementById(tipo === "hidratacao" ? "hidratacao-som" : "alerta-som");
+            audio.currentTime = 0; // Reinicia o áudio
             audio.play();
             console.log(`Tocando áudio para ${tipo}: ${mensagem}`); // Adiciona log para depuração
 
