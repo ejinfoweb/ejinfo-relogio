@@ -43,6 +43,7 @@
             margin-top: 2vw;
             font-size: 5vw;
             color: #FFD700;
+            white-space: normal;
         }
         .alert {
             background: #FF4500;
@@ -98,7 +99,7 @@
         async function carregarAlertas() {
             try {
                 const response = await fetch(URL_ALERTAS);
-                if (!response.ok) throw new Error('Erro na requisição dos alertas');
+                if (!response.ok) throw new Error('Erro ao carregar alertas.');
                 const data = await response.text();
                 alertas = data.trim().split('\n').map(line => {
                     const [hora, mensagem] = line.split(',');
@@ -112,7 +113,7 @@
         async function carregarConfiguracaoHidratacao() {
             try {
                 const response = await fetch(URL_HIDRATACAO);
-                if (!response.ok) throw new Error('Erro na requisição da configuração de hidratação');
+                if (!response.ok) throw new Error('Erro ao carregar configuração de hidratação.');
                 const data = await response.text();
                 const [horaInicio, horaFim, intervalo] = data.trim().split(',');
                 alertaHidratacao = { horaInicio, horaFim, intervalo: parseInt(intervalo) };
@@ -123,7 +124,7 @@
 
         function atualizarListaAlarmes() {
             const alertList = document.getElementById("alert-list");
-            alertList.innerHTML = '';
+            alertList.innerHTML = ''; // Limpa alertas anteriores
             alertas.forEach(alerta => {
                 const alertElement = document.createElement("div");
                 alertElement.className = "alert";
