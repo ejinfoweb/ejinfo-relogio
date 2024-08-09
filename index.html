@@ -71,45 +71,6 @@
                 opacity: 0;
             }
         }
-        #config-area {
-            display: none;
-            margin: 2vw;
-        }
-        .config-section {
-            margin: 1vw;
-            padding: 1vw;
-            border: 1px solid #333;
-            border-radius: 5px;
-            background-color: #000000;
-            color: #FFFFFF;
-            text-align: left;
-        }
-        .config-section span {
-            display: block;
-            margin-bottom: 1vw;
-        }
-        .config-section button {
-            background: #333;
-            color: #FFF;
-            border: none;
-            padding: 0.5vw 1vw;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .config-section button:hover {
-            background: #555;
-        }
-        @media only screen and (max-width: 768px) {
-            #data, #relogio, #periodo, #alert-list {
-                font-size: 6vw;
-            }
-            #relogio {
-                font-size: 8vw;
-            }
-            #alert-list {
-                font-size: 4.5vw;
-            }
-        }
     </style>
 </head>
 <body>
@@ -124,23 +85,7 @@
     </header>
     <main>
         <div id="alert-list"></div>
-        <section id="config-area">
-            <h2>Adicionar Novo Alarme</h2>
-            <input type="time" id="novo-alarm-hora" aria-label="Hora do Alarme">
-            <input type="text" id="novo-alarm-mensagem" placeholder="Mensagem do Alarme" aria-label="Mensagem do Alarme">
-            <button onclick="adicionarAlarme()" aria-label="Adicionar Alarme">Adicionar Alarme</button>
-
-            <h2>Configuração de Hidratação</h2>
-            <input type="time" id="hora-inicio" aria-label="Hora de Início">
-            <input type="time" id="hora-fim" aria-label="Hora de Fim">
-            <input type="number" id="intervalo-hidracao" placeholder="Intervalo (minutos)" aria-label="Intervalo de Hidratação">
-            <button onclick="configurarHidratacao()" aria-label="Salvar Configurações">Salvar Configurações</button>
-
-            <h2>Alertas Cadastrados</h2>
-            <div id="lista-alarmes"></div>
-        </section>
     </main>
-    <button onclick="toggleConfig()" aria-label="Mostrar/Ocultar Configuração">Mostrar/Ocultar Configuração</button>
 
     <audio id="alerta-som" src="alerta.wav" preload="auto"></audio>
     <audio id="hidratacao-som" src="hidratacao.wav" preload="auto"></audio>
@@ -160,7 +105,6 @@
                     const [hora, mensagem] = line.split(',');
                     return { hora, mensagem };
                 });
-                atualizarListaAlarmes();
             } catch (error) {
                 console.error('Erro ao carregar os alertas:', error);
             }
@@ -178,76 +122,14 @@
         }
 
         function atualizarListaAlarmes() {
-            const listaAlarmes = document.getElementById("lista-alarmes");
-            listaAlarmes.innerHTML = '';
-            alertas.forEach((alerta, index) => {
-                const alarmeDiv = document.createElement("div");
-                alarmeDiv.className = "config-section";
-                alarmeDiv.innerHTML = `
-                    <span>${alerta.hora} - ${alerta.mensagem}</span>
-                    <button onclick="editarAlarme(${index})">Editar</button>
-                    <button onclick="removerAlarme(${index})">Excluir</button>
-                `;
-                listaAlarmes.appendChild(alarmeDiv);
+            const alertList = document.getElementById("alert-list");
+            alertList.innerHTML = '';
+            alertas.forEach(alerta => {
+                const alertElement = document.createElement("div");
+                alertElement.className = "alert";
+                alertElement.innerHTML = alerta.mensagem;
+                alertList.appendChild(alertElement);
             });
-        }
-
-        function adicionarAlarme() {
-            const hora = document.getElementById("novo-alarm-hora").value;
-            const mensagem = document.getElementById("novo-alarm-mensagem").value;
-
-            if (hora && mensagem) {
-                alertas.push({ hora, mensagem });
-                atualizarListaAlarmes();
-                salvarAlertas();
-            } else {
-                alert("Preencha todos os campos do alarme.");
-            }
-        }
-
-        function editarAlarme(index) {
-            const hora = prompt("Nova Hora:", alertas[index].hora);
-            const mensagem = prompt("Nova Mensagem:", alertas[index].mensagem);
-
-            if (hora && mensagem) {
-                alertas[index] = { hora, mensagem };
-                atualizarListaAlarmes();
-                salvarAlertas();
-            }
-        }
-
-        function removerAlarme(index) {
-            alertas.splice(index, 1);
-            atualizarListaAlarmes();
-            salvarAlertas();
-        }
-
-        function salvarAlertas() {
-            // Esta função precisa de um back-end para salvar os alertas no arquivo GitHub
-            // Para uma solução real, você deve usar um back-end ou GitHub API como mencionado antes
-        }
-
-        function configurarHidratacao() {
-            const horaInicio = document.getElementById("hora-inicio").value;
-            const horaFim = document.getElementById("hora-fim").value;
-            const intervalo = document.getElementById("intervalo-hidracao").value;
-
-            if (horaInicio && horaFim && intervalo) {
-                alertaHidratacao = { horaInicio, horaFim, intervalo: parseInt(intervalo) };
-                salvarConfiguracaoHidratacao();
-            } else {
-                alert("Preencha todos os campos da configuração de hidratação.");
-            }
-        }
-
-        function salvarConfiguracaoHidratacao() {
-            // Esta função precisa de um back-end para salvar a configuração de hidratação
-            // Para uma solução real, você deve usar um back-end ou GitHub API como mencionado antes
-        }
-
-        function toggleConfig() {
-            const configArea = document.getElementById("config-area");
-            configArea.style.display = configArea.style.display === "none" ? "block" : "none";
         }
 
         function atualizarRelogio() {
@@ -318,7 +200,6 @@
             audio.play();
 
             const alertList = document.getElementById("alert-list");
-            alertList.innerHTML = ''; // Remove alertas antigos
             const alertElement = document.createElement("div");
             alertElement.className = "alert highlight";
             alertElement.innerHTML = mensagem;
