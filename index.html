@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relógio com Alarme</title>
+    <style>
+        body {
+            background-color: transparent;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            color: #FFFFFF;
+        }
+        #data {
+            font-size: 5vw;
+            font-weight: bold;
+            color: #FFFF00;
+            margin: 2vw;
+        }
+        #relogio {
+            font-size: 10vw;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin: 2vw;
+        }
+        #periodo {
+            font-size: 5vw;
+            font-weight: bold;
+            color: #00FF00;
+            margin: 2vw;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #periodo .icon {
+            font-size: 6vw;
+            margin: 0 1vw;
+        }
+        #alert-list {
+            margin-top: 2vw;
+            font-size: 5vw;
+            color: #FFD700;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+        }
+        .alert {
+            background: #FF4500;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 2vw;
+            margin: 2vw 0;
+            display: block;
+            font-size: 5vw;
+            font-weight: bold;
+            color: #FFFFFF;
+            text-shadow: 1px 1px 2px #000000;
+        }
+        .highlight {
+            background: #FFD700;
+            color: #000;
+        }
+        #config-area {
+            display: none;
+            margin: 2vw;
+        }
+        .config-section {
+            margin: 1vw;
+            padding: 1vw;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f4f4f4;
+        }
+        @media only screen and (max-width: 768px) {
+            #data, #relogio, #periodo, #alert-list {
+                font-size: 6vw;
+            }
+            #relogio {
+                font-size: 8vw;
+            }
+            #alert-list {
+                font-size: 4.5vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2 id="data"></h2>
+    <h1 id="relogio"></h1>
+    <h2 id="periodo">
+        <span class="icon" id="periodo-icon"></span>
+        <span id="periodo-text"></span>
+        <span class="icon" id="periodo-icon-end"></span>
+    </h2>
+    <div id="alert-list"></div>
+
+    <div id="config-area">
+        <h2>Adicionar Novo Alarme</h2>
+        <input type="time" id="novo-alarm-hora">
+        <input type="text" id="novo-alarm-mensagem" placeholder="Mensagem do Alarme">
+        <button onclick="adicionarAlarme()">Adicionar Alarme</button>
+
+        <h2>Configuração de Hidratação</h2>
+        <input type="time" id="hora-inicio">
+        <input type="time" id="hora-fim">
+        <input type="number" id="intervalo-hidracao" placeholder="Intervalo (minutos)">
+        <button onclick="configurarHidratacao()">Salvar Configurações</button>
+
+        <h2>Alertas Cadastrados</h2>
+        <div id="lista-alarmes"></div>
+    </div>
+
+    <button onclick="toggleConfig()">Mostrar/Ocultar Configuração</button>
+
+    <audio id="alerta-som" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+    <script>
+        let alertas = JSON.parse(localStorage.getItem('alertas')) || [];
+        let alertaHidratacao = JSON.parse(localStorage.getItem('alertaHidratacao')) || { horaInicio: "07:30", horaFim: "22:00", intervalo: 120 };
+
+        function atualizarListaAlarmes() {
+            const listaAlarmes = document.getElementById("lista-alarmes");
+            listaAlarmes.innerHTML = '';
+            alertas.forEach((alerta, index) => {
+                const alarmeDiv = document.createElement("div");
+                alarmeDiv.className = "config-section";
+                alarmeDiv.innerHTML = `
+                    <span>${alerta.hora} - ${alerta.mensagem}</span>
+                    <button onclick="editarAlarme(${index})">Editar</button>
+                    <button onclick="removerAlarme(${index})">Excluir</button>
+                `;
+                listaAlarmes.appendChild(alarmeDiv);
+            });
+        }
+
+        function adicionarAlarme() {
+            const hora = document.getElementById("novo-alarm-hora").value;
+            const mensagem = document.getElementById("novo-alarm-mensagem").value;
+
+            if (hora && mensagem) {
+                alertas.push({ hora, mensagem });
+                localStorage.setItem('alertas', JSON.stringify(alertas));
+                atualizarListaAlarmes();
+            } else {
+                alert("Preencha todos os campos do alarme.");
+            }
+        }
+
+        function editarAlarme(index) {
+            const hora = prompt("Nova Hora:", alertas[index].hora);
+            const mensagem = prompt("Nova Mensagem:", alertas[index].mensagem);
+
+            if (hora && mensagem) {
+                alertas[index] = { hora, mensagem };
+                localStorage.setItem('alertas', JSON.stringify(alertas));
+                atualizarListaAlarmes();
+            }
+        }
+
+        function removerAlarme(index) {
+            alertas.splice(index, 1);
+            localStorage.setItem('alertas', JSON.stringify(alertas));
+            atualizarListaAlarmes();
+        }
+
+        function configurarHidratacao() {
+            const horaInicio = document.getElementById("hora-inicio").value;
+            const horaFim = document.getElementById("hora-fim").value;
+            const intervalo = document.getElementById("intervalo-hidracao").value;
+
+            if (horaInicio && horaFim && intervalo) {
+                alertaHidratacao = { horaInicio, horaFim, intervalo: parseInt(intervalo) };
+                localStorage.setItem('alertaHidratacao', JSON.stringify(alertaHidratacao));
+            } else {
+                alert("Preencha todos os campos da configuração de hidratação.");
+            }
+        }
+
+        function toggleConfig() {
+            const configArea = document.getElementById("config-area");
+            configArea.style.display = configArea.style.display === "none" ? "block" : "none";
+        }
+
+        function atualizarRelogio() {
+            const agora = new Date();
+            const hora = agora.getHours();
+            const minutos = agora.getMinutes();
+            const segundos = agora.getSeconds();
+            const dia = agora.getDate();
+            const mes = agora.getMonth() + 1;
+            const ano = agora.getFullYear();
+            const diaSemana = agora.toLocaleDateString("pt-BR", { weekday: "long" }).charAt(0).toUpperCase() + agora.toLocaleDateString("pt-BR", { weekday: "long" }).slice(1);
+
+            let periodo = "";
+            let iconeInicio = "";
+            let iconeFim = "";
+            if (hora >= 0 && hora < 6) {
+                periodo = "Madrugada";
+                iconeInicio = "🌙";
+                iconeFim = "🌙";
+            } else if (hora >= 6 && hora < 12) {
+                periodo = "Manhã";
+                iconeInicio = "🌅";
+                iconeFim = "🌅";
+            } else if (hora >= 12 && hora < 18) {
+                periodo = "Tarde";
+                iconeInicio = "☀️";
+                iconeFim = "☀️";
+            } else {
+                periodo = "Noite";
+                iconeInicio = "🌜";
+                iconeFim = "🌜";
+            }
+
+            document.getElementById("data").innerHTML = `${diaSemana} - ${dia.toString().padStart(2, "0")}/${mes.toString().padStart(2, "0")}/${ano}`;
+            document.getElementById("relogio").innerHTML = `<span style="font-family: 'Digital-7';">${hora.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</span>`;
+            document.getElementById("periodo-icon").textContent = iconeInicio;
+            document.getElementById("periodo-text").textContent = periodo;
+            document.getElementById("periodo-icon-end").textContent = iconeFim;
+
+            verificarAlertas(hora, minutos);
+        }
+
+        function verificarAlertas(hora, minuto) {
+            const horaAtual = `${hora.toString().padStart(2, "0")}:${minuto.toString().padStart(2, "0")}`;
+
+            // Verifica alerta de hidratação
+            const agora = new Date();
+            const horaAtualHidratacao = `${agora.getHours().toString().padStart(2, "0")}:${agora.getMinutes().toString().padStart(2, "0")}`;
+            if (horaAtualHidratacao >= alertaHidratacao.horaInicio && horaAtualHidratacao <= alertaHidratacao.horaFim) {
+                const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
+                const inicio = parseInt(alertaHidratacao.horaInicio.split(":")[0]) * 60 + parseInt(alertaHidratacao.horaInicio.split(":")[1]);
+                const intervalo = alertaHidratacao.intervalo;
+                if ((tempoAtual - inicio) % intervalo === 0) {
+                    tocarAlarme("🚰 Atenção! Hora de beber água.\nVamos beber um copo de água.");
+                }
+            }
+
+            // Verifica outros alertas
+            alertas.forEach(alerta => {
+                if (horaAtual === alerta.hora) {
+                    tocarAlarme(alerta.mensagem);
+                }
+            });
+        }
+
+        function tocarAlarme(mensagem) {
+            const audio = document.getElementById("alerta-som");
+            audio.play();
+
+            const alertList = document.getElementById("alert-list");
+            alertList.innerHTML = ''; // Remove alertas antigos
+            const alertElement = document.createElement("div");
+            alertElement.className = "alert highlight";
+            alertElement.innerHTML = mensagem;
+            alertList.appendChild(alertElement);
+
+            setTimeout(() => {
+                alertElement.remove(); // Remove o alerta após 1 minuto
+            }, 60000);
+        }
+
+        setInterval(atualizarRelogio, 1000); // Atualiza o relógio a cada segundo
+        atualizarListaAlarmes(); // Atualiza a lista de alarmes ao carregar a página
+    </script>
+</body>
+</html>
