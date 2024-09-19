@@ -150,6 +150,10 @@
 
             const activeAlerts = alertas.filter(alert => alert.hora === currentTime);
 
+            if (activeAlerts.length > 0) {
+                console.log(`Alertas para ${currentTime}:`, activeAlerts);
+            }
+
             renderAlerts(activeAlerts);
         }
 
