@@ -147,6 +147,7 @@
         function checkAlerts(currentHour, currentMinute) {
             const formattedMinute = currentMinute < 10 ? '0' + currentMinute : currentMinute;
             const currentTime = `${currentHour}:${formattedMinute}`;
+            console.log(`Hora atual para verificação de alertas: ${currentTime}`);
 
             const activeAlerts = alertas.filter(alert => alert.hora === currentTime);
 
@@ -159,12 +160,21 @@
 
         function carregarAlertas() {
             fetch(URL_ALERTAS)
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar o arquivo de alertas.');
+                    }
+                    return response.text();
+                })
                 .then(data => {
                     alertas = data.trim().split('\n').map(line => {
                         const [hora, mensagem] = line.split(',');
-                        return { hora, message: mensagem };
-                    });
+                        if (hora && mensagem) {
+                            return { hora, message: mensagem };
+                        }
+                        console.warn(`Linha mal formatada no arquivo: "${line}"`);
+                        return null;
+                    }).filter(alert => alert !== null);
                     console.log('Alertas carregados:', alertas);
                 })
                 .catch(error => {
