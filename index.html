@@ -153,12 +153,15 @@
 
             if (activeAlerts.length > 0) {
                 console.log(`Alertas para ${currentTime}:`, activeAlerts);
+            } else {
+                console.log(`Nenhum alerta ativo para ${currentTime}.`);
             }
 
             renderAlerts(activeAlerts);
         }
 
         function carregarAlertas() {
+            console.log('Tentando carregar alertas de', URL_ALERTAS);
             fetch(URL_ALERTAS)
                 .then(response => {
                     if (!response.ok) {
@@ -170,7 +173,7 @@
                     alertas = data.trim().split('\n').map(line => {
                         const [hora, mensagem] = line.split(',');
                         if (hora && mensagem) {
-                            return { hora, message: mensagem };
+                            return { hora, message: mensagem.trim() };
                         }
                         console.warn(`Linha mal formatada no arquivo: "${line}"`);
                         return null;
@@ -184,6 +187,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM completamente carregado e analisado');
             carregarAlertas();
             setInterval(updateDateTime, 1000);
             updateDateTime(); // Atualiza imediatamente ao carregar
