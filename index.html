@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,65 +14,59 @@
             margin: 0;
             padding: 20px;
         }
-
-        .date,
-        .clock,
-        .shift {
+        .date {
+            color: yellow;
+            font-size: 72px; /* Fonte maior */
             margin-bottom: 20px;
             font-weight: bold;
         }
-
-        .date {
-            color: yellow;
-            font-size: 8vw; /* Tamanho de fonte responsivo */
-        }
-
         .clock {
-            font-size: 12vw; /* Tamanho de fonte responsivo */
+            font-size: 120px; /* Fonte maior */
             color: white;
+            margin-bottom: 20px;
             letter-spacing: 5px;
+            font-weight: bold;
         }
-
         .shift {
-            font-size: 8vw; /* Tamanho de fonte responsivo */
-            color: #32CD32;
+            font-size: 72px; /* Fonte maior */
+            color: #32CD32; /* Verde-limão */
+            margin-bottom: 20px;
+            font-weight: bold;
         }
-
         .alerts-section {
             margin-top: 40px;
             padding: 20px;
             border-radius: 10px;
-            background-color: transparent;
+            background-color: transparent; /* Remover fundo cinza */
             text-align: center;
             color: white;
-            position: relative;
+            position: relative; /* Contêiner pai para alertas */
             width: 100%;
         }
-
         .alert-item {
             background-color: red;
             color: yellow;
-            padding: 30px;
+            padding: 30px; /* Reduzido para evitar rolagem */
             border-radius: 10px;
-            font-size: 6vw; /* Fonte responsiva */
+            font-size: 48px; /* Fonte grande, mas menor que antes */
             font-weight: bold;
-            text-transform: uppercase;
-            text-align: center;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
-            box-sizing: border-box;
-            max-width: 100%;
+            text-transform: uppercase; /* Caixa alta */
+            text-align: center; /* Alinha texto ao centro */
+            position: absolute; /* Para ocupar toda a largura */
+            left: 50%; /* Alinha ao centro do contêiner pai */
+            transform: translateX(-50%); /* Corrige o alinhamento central */
+            width: calc(100% - 40px); /* Largura completa menos padding */
+            box-sizing: border-box; /* Inclui padding e border no width total */
+            max-width: 100%; /* Limita a largura para evitar overflow */
+            opacity: 1;
+            transition: opacity 1s linear;
         }
-
         .no-alerts {
-            font-size: 5vw;
+            font-size: 36px;
             color: white;
         }
     </style>
 </head>
-
 <body>
     <div class="date" id="date"></div>
     <div class="clock" id="clock"></div>
@@ -81,16 +74,18 @@
 
     <!-- Seção de Alertas -->
     <div class="alerts-section">
-        <div id="alertList" class="no-alerts">Carregando alertas...</div>
+        <div id="alertList" class="no-alerts"></div>
     </div>
 
     <!-- Arquivo de áudio -->
-    <audio id="alertSound" src="URL_DO_SEU_AUDIO.mp3"></audio>
+    <audio id="alertSound" src="alarme.wav"></audio>
 
     <script>
+        const URL_ALERTAS = 'alertas.txt';
+
+        let alertas = [];
         let alertInterval;
-        const alerts = [];
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbyr_JizRQ5QMbndFSWgpQpLFrtW9feUWmzpQrvT23vylxXs6AmMFzj4vk_8rt8CuKVA/exec'; // Substitua pelo URL do seu script do Google Apps
+        let audioPlaying = false;
 
         function updateDateTime() {
             const now = new Date();
@@ -123,56 +118,73 @@
 
             document.getElementById('shift').innerHTML = shift;
 
-            checkAlerts(hours, minutes, seconds);
+            checkAlerts(hours, minutes);
         }
 
         function renderAlerts(alertsToShow) {
             const alertList = document.getElementById('alertList');
             alertList.innerHTML = '';
             if (alertsToShow.length === 0) {
-                alertList.innerHTML = 'Franci, sua família te ama! ❤️';
+                alertList.innerHTML = 'Nenhum alerta no momento.';
             } else {
                 alertsToShow.forEach((alert) => {
                     const alertItem = document.createElement('div');
                     alertItem.className = 'alert-item';
-                    alertItem.innerHTML = `<span>${alert.message}</span>`;
+                    alertItem.innerHTML = ` 
+                        <span>${alert.mensagem}</span>
+                    `;
                     alertList.appendChild(alertItem);
+
+                    // Remove o alerta após 1 minuto
+                    setTimeout(() => {
+                        alertItem.style.opacity = 0;
+                        setTimeout(() => alertItem.remove(), 1000); // Remove após 1 segundo (transição de opacidade)
+                    }, 60000); // Remove após 1 minuto
                 });
             }
         }
 
-        function checkAlerts(currentHour, currentMinute, currentSecond) {
+        function checkAlerts(currentHour, currentMinute) {
             const formattedMinute = currentMinute < 10 ? '0' + currentMinute : currentMinute;
             const currentTime = `${currentHour}:${formattedMinute}`;
+            const activeAlerts = alertas.filter(alert => alert.hora === currentTime);
 
-            const activeAlerts = alerts.filter(alert => alert.hour === currentTime);
-
-            if (activeAlerts.length > 0 && currentSecond < 15) {
-                playAlarm();
+            if (activeAlerts.length > 0) {
+                if (alertInterval) {
+                    clearInterval(alertInterval);
+                }
+                activeAlerts.forEach(alert => {
+                    playAlertSound();
+                });
                 renderAlerts(activeAlerts);
             } else {
                 renderAlerts([]);
             }
         }
 
-        function playAlarm() {
+        function playAlertSound() {
             const alertSound = document.getElementById('alertSound');
-            alertSound.play();
-
-            setTimeout(() => {
-                alertSound.pause();
-                alertSound.currentTime = 0; // Reinicia o áudio
-            }, 15000); // Toca por 15 segundos
+            if (!audioPlaying) {
+                audioPlaying = true;
+                alertSound.currentTime = 0; // Reseta o tempo do áudio
+                alertSound.play();
+                setTimeout(() => {
+                    alertSound.pause();
+                    alertSound.currentTime = 0; // Reinicia o áudio
+                    audioPlaying = false;
+                }, 15000); // Toca o áudio por 15 segundos
+            }
         }
 
-        function fetchAlerts() {
-            fetch(scriptUrl)
-                .then(response => response.json())
+        function loadAlerts() {
+            fetch(URL_ALERTAS)
+                .then(response => response.text())
                 .then(data => {
-                    alerts.length = 0;
-                    data.forEach(item => {
-                        alerts.push(item);
+                    alertas = data.trim().split('\n').map(line => {
+                        const [hora, mensagem] = line.split(',');
+                        return { hora, mensagem };
                     });
+                    console.log('Alertas carregados:', alertas); // Log para depuração
                 })
                 .catch(error => {
                     console.error('Erro ao carregar alertas:', error);
@@ -181,11 +193,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            fetchAlerts();
+            loadAlerts();
             setInterval(updateDateTime, 1000);
             updateDateTime(); // Atualiza imediatamente ao carregar
         });
     </script>
 </body>
-
 </html>
