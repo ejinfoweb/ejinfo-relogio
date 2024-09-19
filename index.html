@@ -1,232 +1,191 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relógio com Alarme</title>
+    <title>Relógio Digital e Alertas</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap">
     <style>
         body {
             background-color: black;
-            font-family: Arial, sans-serif;
+            color: white;
+            font-family: 'Roboto', sans-serif;
             text-align: center;
             margin: 0;
-            padding: 0;
-            color: #FFFFFF;
+            padding: 20px;
         }
-        #data {
-            font-size: 5vw;
+
+        .date,
+        .clock,
+        .shift {
+            margin-bottom: 20px;
             font-weight: bold;
-            color: #FFFF00;
-            margin: 2vw;
         }
-        #relogio {
-            font-size: 10vw;
-            font-weight: bold;
-            color: #FFFFFF;
-            margin: 2vw;
+
+        .date {
+            color: yellow;
+            font-size: 8vw; /* Tamanho de fonte responsivo */
         }
-        #periodo {
-            font-size: 5vw;
-            font-weight: bold;
-            color: #00FF00;
-            margin: 2vw;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        .clock {
+            font-size: 12vw; /* Tamanho de fonte responsivo */
+            color: white;
+            letter-spacing: 5px;
         }
-        #periodo .icon {
-            font-size: 6vw;
-            margin: 0 1vw;
+
+        .shift {
+            font-size: 8vw; /* Tamanho de fonte responsivo */
+            color: #32CD32;
         }
-        #alert-list {
-            margin-top: 2vw;
-            font-size: 5vw;
-            color: #FFD700;
-            white-space: normal;
-        }
-        .alert {
-            background: #FF4500;
-            border: 2px solid #FFD700;
+
+        .alerts-section {
+            margin-top: 40px;
+            padding: 20px;
             border-radius: 10px;
-            padding: 2vw;
-            margin: 2vw 0;
-            font-size: 5vw;
-            font-weight: bold;
-            color: #FFFFFF;
-            text-shadow: 1px 1px 2px #000000;
+            background-color: transparent;
+            text-align: center;
+            color: white;
             position: relative;
-            opacity: 1;
-            transition: opacity 1s linear;
+            width: 100%;
         }
-        @media only screen and (max-width: 768px) {
-            #data, #relogio, #periodo, #alert-list {
-                font-size: 6vw;
-            }
-            #relogio {
-                font-size: 8vw;
-            }
-            #alert-list {
-                font-size: 4.5vw;
-            }
+
+        .alert-item {
+            background-color: red;
+            color: yellow;
+            padding: 30px;
+            border-radius: 10px;
+            font-size: 6vw; /* Fonte responsiva */
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        .no-alerts {
+            font-size: 5vw;
+            color: white;
         }
     </style>
 </head>
-<body>
-    <header>
-        <h2 id="data"></h2>
-        <h1 id="relogio"></h1>
-        <h2 id="periodo">
-            <span class="icon" id="periodo-icon"></span>
-            <span id="periodo-text"></span>
-            <span class="icon" id="periodo-icon-end"></span>
-        </h2>
-    </header>
-    <main>
-        <div id="alert-list"></div>
-    </main>
 
-    <audio id="alerta-som" src="alarme.wav" preload="auto"></audio>
-    <audio id="hidratacao-som" src="hidratacao.wav" preload="auto"></audio>
+<body>
+    <div class="date" id="date"></div>
+    <div class="clock" id="clock"></div>
+    <div class="shift" id="shift"></div>
+
+    <!-- Seção de Alertas -->
+    <div class="alerts-section">
+        <div id="alertList" class="no-alerts">Carregando alertas...</div>
+    </div>
+
+    <!-- Arquivo de áudio -->
+    <audio id="alertSound" src="URL_DO_SEU_AUDIO.mp3"></audio>
 
     <script>
-        const URL_ALERTAS = 'alertas.txt';
-        const URL_HIDRATACAO = 'hidratacao.txt';
+        let alertInterval;
+        const alerts = [];
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbyr_JizRQ5QMbndFSWgpQpLFrtW9feUWmzpQrvT23vylxXs6AmMFzj4vk_8rt8CuKVA/exec'; // Substitua pelo URL do seu script do Google Apps
 
-        let alertas = [];
-        let alertaHidratacao = { horaInicio: "07:30", horaFim: "22:00", intervalo: 120 };
+        function updateDateTime() {
+            const now = new Date();
+            const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+            const day = days[now.getDay()];
+            const date = now.toLocaleDateString('pt-BR');
+            
+            document.getElementById('date').innerHTML = `${day} - ${date}`;
 
-        async function carregarAlertas() {
-            try {
-                const response = await fetch(URL_ALERTAS);
-                if (!response.ok) throw new Error('Erro ao carregar alertas.');
-                const data = await response.text();
-                alertas = data.trim().split('\n').map(line => {
-                    const [hora, mensagem] = line.split(',');
-                    return { hora, mensagem };
-                });
-            } catch (error) {
-                console.error('Erro ao carregar os alertas:', error);
-            }
-        }
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            
+            document.getElementById('clock').innerHTML = timeString;
 
-        async function carregarConfiguracaoHidratacao() {
-            try {
-                const response = await fetch(URL_HIDRATACAO);
-                if (!response.ok) throw new Error('Erro ao carregar configuração de hidratação.');
-                const data = await response.text();
-                const [horaInicio, horaFim, intervalo] = data.trim().split(',');
-                alertaHidratacao = { horaInicio, horaFim, intervalo: parseInt(intervalo) };
-            } catch (error) {
-                console.error('Erro ao carregar configuração de hidratação:', error);
-            }
-        }
-
-        function atualizarListaAlarmes() {
-            const alertList = document.getElementById("alert-list");
-            alertList.innerHTML = ''; // Limpa alertas anteriores
-            alertas.forEach(alerta => {
-                const alertElement = document.createElement("div");
-                alertElement.className = "alert";
-                alertElement.innerHTML = alerta.mensagem;
-                alertList.appendChild(alertElement);
-
-                // Remove o alerta após 1 minuto
-                setTimeout(() => {
-                    alertElement.style.opacity = 0;
-                    setTimeout(() => alertElement.remove(), 1000); // Remove após 1 segundo (transição de opacidade)
-                }, 60000); // Remove após 1 minuto
-            });
-        }
-
-        function atualizarRelogio() {
-            const agora = new Date();
-            const hora = agora.getHours();
-            const minutos = agora.getMinutes();
-            const segundos = agora.getSeconds();
-            const dia = agora.getDate();
-            const mes = agora.getMonth() + 1;
-            const ano = agora.getFullYear();
-            const diaSemana = agora.toLocaleDateString("pt-BR", { weekday: "long" }).charAt(0).toUpperCase() + agora.toLocaleDateString("pt-BR", { weekday: "long" }).slice(1);
-
-            let periodo = "";
-            let iconeInicio = "";
-            let iconeFim = "";
-            if (hora >= 0 && hora < 6) {
-                periodo = "Madrugada";
-                iconeInicio = "😴"; // Emoji de olhos dormindo
-                iconeFim = "😴";
-            } else if (hora >= 6 && hora < 12) {
-                periodo = "Manhã";
-                iconeInicio = "🌅";
-                iconeFim = "🌅";
-            } else if (hora >= 12 && hora < 18) {
-                periodo = "Tarde";
-                iconeInicio = "☀️";
-                iconeFim = "☀️";
+            let shift = '';
+            if (hours >= 0 && hours < 6) {
+                shift = '😴 Madrugada 😴';
+            } else if (hours >= 6 && hours < 12) {
+                shift = '🌅 Manhã 🌅';
+            } else if (hours >= 12 && hours < 18) {
+                shift = '☀️ Tarde ☀️';
             } else {
-                periodo = "Noite";
-                iconeInicio = "🌜";
-                iconeFim = "🌜";
+                shift = '🌙 Noite 🌙';
             }
 
-            document.getElementById("data").innerHTML = `${diaSemana} - ${dia.toString().padStart(2, "0")}/${mes.toString().padStart(2, "0")}/${ano}`;
-            document.getElementById("relogio").innerHTML = `<span style="font-family: 'Digital-7';">${hora.toString().padStart(2, "0")}:${minutos.toString().padStart(2, "0")}:${segundos.toString().padStart(2, "0")}</span>`;
-            document.getElementById("periodo-icon").textContent = iconeInicio;
-            document.getElementById("periodo-text").textContent = periodo;
-            document.getElementById("periodo-icon-end").textContent = iconeFim;
+            document.getElementById('shift').innerHTML = shift;
 
-            verificarAlertas(hora, minutos);
+            checkAlerts(hours, minutes, seconds);
         }
 
-        function verificarAlertas(hora, minuto) {
-            const horaAtual = `${hora.toString().padStart(2, "0")}:${minuto.toString().padStart(2, "0")}`;
-
-            // Verifica alerta de hidratação
-            const agora = new Date();
-            const horaAtualHidratacao = `${agora.getHours().toString().padStart(2, "0")}:${agora.getMinutes().toString().padStart(2, "0")}`;
-            if (horaAtualHidratacao >= alertaHidratacao.horaInicio && horaAtualHidratacao <= alertaHidratacao.horaFim) {
-                const tempoAtual = agora.getHours() * 60 + agora.getMinutes();
-                const inicio = parseInt(alertaHidratacao.horaInicio.split(":")[0]) * 60 + parseInt(alertaHidratacao.horaInicio.split(":")[1]);
-                const intervalo = alertaHidratacao.intervalo;
-                if ((tempoAtual - inicio) % intervalo === 0) {
-                    tocarAlarme("🚰 Atenção! Hora de beber água.\nVamos beber um copo de água.", "hidratacao");
-                }
+        function renderAlerts(alertsToShow) {
+            const alertList = document.getElementById('alertList');
+            alertList.innerHTML = '';
+            if (alertsToShow.length === 0) {
+                alertList.innerHTML = 'Franci, sua família te ama! ❤️';
+            } else {
+                alertsToShow.forEach((alert) => {
+                    const alertItem = document.createElement('div');
+                    alertItem.className = 'alert-item';
+                    alertItem.innerHTML = `<span>${alert.message}</span>`;
+                    alertList.appendChild(alertItem);
+                });
             }
-
-            // Verifica outros alertas
-            alertas.forEach(alerta => {
-                if (horaAtual === alerta.hora) {
-                    tocarAlarme(alerta.mensagem, "alerta");
-                }
-            });
         }
 
-        function tocarAlarme(mensagem, tipo) {
-            const audio = document.getElementById(tipo === "hidratacao" ? "hidratacao-som" : "alerta-som");
-            audio.currentTime = 0; // Reseta o tempo do áudio
-            audio.play();
+        function checkAlerts(currentHour, currentMinute, currentSecond) {
+            const formattedMinute = currentMinute < 10 ? '0' + currentMinute : currentMinute;
+            const currentTime = `${currentHour}:${formattedMinute}`;
 
-            const alertList = document.getElementById("alert-list");
-            const alertElement = document.createElement("div");
-            alertElement.className = "alert";
-            alertElement.innerHTML = mensagem;
-            alertList.appendChild(alertElement);
+            const activeAlerts = alerts.filter(alert => alert.hour === currentTime);
 
-            // Remove o alerta após 1 minuto
+            if (activeAlerts.length > 0 && currentSecond < 15) {
+                playAlarm();
+                renderAlerts(activeAlerts);
+            } else {
+                renderAlerts([]);
+            }
+        }
+
+        function playAlarm() {
+            const alertSound = document.getElementById('alertSound');
+            alertSound.play();
+
             setTimeout(() => {
-                alertElement.style.opacity = 0;
-                setTimeout(() => alertElement.remove(), 1000); // Remove após 1 segundo (transição de opacidade)
-            }, 60000); // Remove após 1 minuto
+                alertSound.pause();
+                alertSound.currentTime = 0; // Reinicia o áudio
+            }, 15000); // Toca por 15 segundos
         }
 
-        function iniciarRelogio() {
-            carregarAlertas();
-            carregarConfiguracaoHidratacao();
-            setInterval(atualizarRelogio, 1000);
+        function fetchAlerts() {
+            fetch(scriptUrl)
+                .then(response => response.json())
+                .then(data => {
+                    alerts.length = 0;
+                    data.forEach(item => {
+                        alerts.push(item);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar alertas:', error);
+                    document.getElementById('alertList').innerText = 'Erro ao carregar alertas.';
+                });
         }
 
-        window.onload = iniciarRelogio;
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAlerts();
+            setInterval(updateDateTime, 1000);
+            updateDateTime(); // Atualiza imediatamente ao carregar
+        });
     </script>
 </body>
+
 </html>
