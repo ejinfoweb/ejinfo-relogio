@@ -13,22 +13,23 @@
             text-align: center;
             margin: 0;
             padding: 20px;
+            overflow-x: hidden;
         }
         .date {
             color: yellow;
-            font-size: 72px;
+            font-size: 5vw;
             margin-bottom: 20px;
             font-weight: bold;
         }
         .clock {
-            font-size: 120px;
+            font-size: 10vw;
             color: white;
             margin-bottom: 20px;
             letter-spacing: 5px;
             font-weight: bold;
         }
         .shift {
-            font-size: 72px;
+            font-size: 5vw;
             color: #32CD32;
             margin-bottom: 20px;
             font-weight: bold;
@@ -48,7 +49,7 @@
             color: yellow;
             padding: 30px;
             border-radius: 10px;
-            font-size: 48px;
+            font-size: 3vw;
             font-weight: bold;
             text-transform: uppercase;
             text-align: center;
@@ -60,7 +61,7 @@
             max-width: 100%;
         }
         .no-alerts {
-            font-size: 36px;
+            font-size: 3vw;
             color: white;
         }
     </style>
@@ -72,22 +73,24 @@
 
     <!-- Seção de Alertas -->
     <div class="alerts-section">
-        <div id="alertList" class="no-alerts">❤️ Franci, a sua família te ama! ❤️</div>
+        <div id="alertList" class="no-alerts">Franci, a sua família te ama! ❤️</div>
     </div>
 
     <!-- Arquivo de áudio -->
-    <audio id="alertSound" src="alarme.mp3" preload="auto"></audio>
+    <audio id="alertSound" src="alarme.wav"></audio>
 
     <script>
         const URL_ALERTAS = 'alertas.txt';
-        let alertInterval;
+        const ALERT_DURATION = 60000; // 1 minuto em milissegundos
+
+        let alertas = [];
 
         function updateDateTime() {
             const now = new Date();
             const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
             const day = days[now.getDay()];
             const date = now.toLocaleDateString('pt-BR');
-
+            
             document.getElementById('date').innerHTML = `${day} - ${date}`;
 
             let hours = now.getHours();
@@ -97,7 +100,7 @@
             minutes = minutes < 10 ? '0' + minutes : minutes;
             seconds = seconds < 10 ? '0' + seconds : seconds;
             const timeString = `${hours}:${minutes}:${seconds}`;
-
+            
             document.getElementById('clock').innerHTML = timeString;
 
             let shift = '';
@@ -120,45 +123,46 @@
             const alertList = document.getElementById('alertList');
             alertList.innerHTML = '';
             if (alertsToShow.length === 0) {
-                alertList.innerHTML = '❤️ Franci, a sua família te ama! ❤️';
+                alertList.innerHTML = 'Franci, a sua família te ama! ❤️';
             } else {
                 alertsToShow.forEach((alert) => {
                     const alertItem = document.createElement('div');
                     alertItem.className = 'alert-item';
-                    alertItem.innerHTML = `<span>${alert.mensagem}</span>`;
+                    alertItem.innerHTML = `<span>${alert.message}</span>`;
                     alertList.appendChild(alertItem);
 
                     // Remove o alerta após 1 minuto
                     setTimeout(() => {
                         alertItem.style.opacity = 0;
                         setTimeout(() => alertItem.remove(), 1000); // Remove após 1 segundo (transição de opacidade)
-                    }, 60000); // Remove após 1 minuto
+                    }, ALERT_DURATION);
                 });
+
+                // Tocar som do alarme
+                const alertSound = document.getElementById('alertSound');
+                alertSound.currentTime = 0; // Reseta o tempo do áudio
+                alertSound.play();
             }
         }
 
         function checkAlerts(currentHour, currentMinute) {
             const formattedMinute = currentMinute < 10 ? '0' + currentMinute : currentMinute;
             const currentTime = `${currentHour}:${formattedMinute}`;
-            console.log(`Verificando alertas para: ${currentTime}`); // Log para depuração
 
+            const activeAlerts = alertas.filter(alert => alert.hora === currentTime);
+
+            renderAlerts(activeAlerts);
+        }
+
+        function carregarAlertas() {
             fetch(URL_ALERTAS)
                 .then(response => response.text())
                 .then(data => {
-                    const alerts = data.trim().split('\n').map(line => {
+                    alertas = data.trim().split('\n').map(line => {
                         const [hora, mensagem] = line.split(',');
-                        return { hora, mensagem };
+                        return { hora, message: mensagem };
                     });
-
-                    const activeAlerts = alerts.filter(alert => alert.hora === currentTime);
-
-                    if (activeAlerts.length > 0) {
-                        console.log(`Alertas ativos: ${JSON.stringify(activeAlerts)}`); // Log para depuração
-                        playAlertSound();
-                        renderAlerts(activeAlerts);
-                    } else {
-                        renderAlerts([]);
-                    }
+                    console.log('Alertas carregados:', alertas);
                 })
                 .catch(error => {
                     console.error('Erro ao carregar alertas:', error);
@@ -166,19 +170,8 @@
                 });
         }
 
-        function playAlertSound() {
-            const alertSound = document.getElementById('alertSound');
-            alertSound.currentTime = 0; // Reseta o tempo do áudio
-            alertSound.play();
-
-            // Para de tocar o áudio após 15 segundos
-            setTimeout(() => {
-                alertSound.pause();
-                alertSound.currentTime = 0; // Reinicia o áudio
-            }, 15000); // 15 segundos
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
+            carregarAlertas();
             setInterval(updateDateTime, 1000);
             updateDateTime(); // Atualiza imediatamente ao carregar
         });
