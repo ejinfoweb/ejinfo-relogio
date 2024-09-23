@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,82 +8,89 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap">
     <style>
         body {
-            background-color: black;
+            background-color: black; /* Fundo preto */
             color: white;
             font-family: 'Roboto', sans-serif;
             text-align: center;
             margin: 0;
             padding: 20px;
-            overflow-x: hidden;
         }
+
         .date {
-            color: yellow;
-            font-size: 5vw;
             margin-bottom: 20px;
-            font-weight: bold;
         }
-        .clock {
-            font-size: 10vw;
+
+        .current-date {
             color: white;
-            margin-bottom: 20px;
+            font-size: 7vw; /* Tamanho de fonte responsivo para a data */
+        }
+
+        .day {
+            color: yellow;
+            font-size: 6vw; /* Tamanho de fonte responsivo para o dia da semana */
+        }
+
+        .clock {
+            font-size: 12vw; /* Tamanho de fonte responsivo */
+            color: white;
             letter-spacing: 5px;
-            font-weight: bold;
         }
+
         .shift {
-            font-size: 5vw;
+            font-size: 8vw; /* Tamanho de fonte responsivo */
             color: #32CD32;
-            margin-bottom: 20px;
-            font-weight: bold;
         }
+
         .alerts-section {
             margin-top: 40px;
             padding: 20px;
             border-radius: 10px;
-            background-color: transparent;
             text-align: center;
             color: white;
             position: relative;
             width: 100%;
         }
+
         .alert-item {
             background-color: red;
             color: yellow;
             padding: 30px;
             border-radius: 10px;
-            font-size: 3vw;
+            font-size: 6vw; /* Fonte responsiva */
             font-weight: bold;
             text-transform: uppercase;
             text-align: center;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
             width: calc(100% - 40px);
             box-sizing: border-box;
             max-width: 100%;
         }
+
         .no-alerts {
-            font-size: 3vw;
+            font-size: 5vw;
             color: white;
         }
     </style>
 </head>
+
 <body>
-    <div class="date" id="date"></div>
+    <div class="date">
+        <div class="current-date" id="currentDate"></div>
+        <div class="day" id="day"></div>
+    </div>
     <div class="clock" id="clock"></div>
     <div class="shift" id="shift"></div>
 
     <!-- Seção de Alertas -->
     <div class="alerts-section">
-        <div id="alertList" class="no-alerts">Franci, a sua família te ama! ❤️</div>
+        <div id="alertList" class="no-alerts">Carregando alertas...</div>
     </div>
 
     <!-- Arquivo de áudio -->
-    <audio id="alertSound" src="https://ejinfoweb.github.io/ejinfo-relogio/alarme.wav"></audio>
+    <audio id="alertSound" src="https://ejinfoweb.github.io/ejinfo-relogio/alarme.wav" preload="auto"></audio>
 
     <script>
-        const URL_ALERTAS = 'https://ejinfoweb.github.io/ejinfo-relogio/alertas.txt';
-        const ALERT_DURATION = 60000; // 1 minuto em milissegundos
-        let alertas = [];
+        const alerts = [];
+        const alertsFileUrl = 'https://ejinfoweb.github.io/ejinfo-relogio/alertas.txt';
 
         function updateDateTime() {
             const now = new Date();
@@ -90,7 +98,8 @@
             const day = days[now.getDay()];
             const date = now.toLocaleDateString('pt-BR');
             
-            document.getElementById('date').innerHTML = `${day} - ${date}`;
+            document.getElementById('currentDate').innerHTML = date;
+            document.getElementById('day').innerHTML = day;
 
             let hours = now.getHours();
             let minutes = now.getMinutes();
@@ -115,70 +124,56 @@
 
             document.getElementById('shift').innerHTML = shift;
 
-            checkAlerts(hours, minutes);
+            checkAlerts(hours, minutes, seconds);
         }
 
         function renderAlerts(alertsToShow) {
             const alertList = document.getElementById('alertList');
             alertList.innerHTML = '';
             if (alertsToShow.length === 0) {
-                alertList.innerHTML = 'Franci, a sua família te ama! ❤️';
+                alertList.innerHTML = 'Franci, sua família te ama! ❤️';
             } else {
                 alertsToShow.forEach((alert) => {
                     const alertItem = document.createElement('div');
                     alertItem.className = 'alert-item';
                     alertItem.innerHTML = `<span>${alert.message}</span>`;
                     alertList.appendChild(alertItem);
-
-                    // Tocar som do alarme
-                    const alertSound = document.getElementById('alertSound');
-                    alertSound.currentTime = 0; // Reseta o tempo do áudio
-                    alertSound.play();
-
-                    // Remove o alerta após 1 minuto
-                    setTimeout(() => {
-                        alertItem.style.opacity = 0;
-                        setTimeout(() => alertItem.remove(), 1000); // Remove após 1 segundo (transição de opacidade)
-                    }, ALERT_DURATION);
                 });
             }
         }
 
-        function checkAlerts(currentHour, currentMinute) {
+        function checkAlerts(currentHour, currentMinute, currentSecond) {
             const formattedMinute = currentMinute < 10 ? '0' + currentMinute : currentMinute;
             const currentTime = `${currentHour}:${formattedMinute}`;
-            console.log(`Hora atual para verificação de alertas: ${currentTime}`);
 
-            const activeAlerts = alertas.filter(alert => alert.hora === currentTime);
+            const activeAlerts = alerts.filter(alert => alert.hour === currentTime);
 
-            if (activeAlerts.length > 0) {
-                console.log(`Alertas para ${currentTime}:`, activeAlerts);
+            if (activeAlerts.length > 0 && currentSecond < 15) {
+                playAlarm();
+                renderAlerts(activeAlerts);
             } else {
-                console.log(`Nenhum alerta ativo para ${currentTime}.`);
+                renderAlerts([]);
             }
-
-            renderAlerts(activeAlerts);
         }
 
-        function carregarAlertas() {
-            console.log('Tentando carregar alertas de', URL_ALERTAS);
-            fetch(URL_ALERTAS)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao carregar o arquivo de alertas.');
-                    }
-                    return response.text();
-                })
+        function playAlarm() {
+            const alertSound = document.getElementById('alertSound');
+            alertSound.currentTime = 0; // Reinicia o áudio
+            alertSound.play();
+        }
+
+        function fetchAlerts() {
+            fetch(alertsFileUrl)
+                .then(response => response.text())
                 .then(data => {
-                    alertas = data.trim().split('\n').map(line => {
-                        const [hora, mensagem] = line.split(',');
-                        if (hora && mensagem) {
-                            return { hora, message: mensagem.trim() };
+                    alerts.length = 0;
+                    const lines = data.split('\n');
+                    lines.forEach(line => {
+                        const [hour, message] = line.split(',');
+                        if (hour && message) {
+                            alerts.push({ hour, message });
                         }
-                        console.warn(`Linha mal formatada no arquivo: "${line}"`);
-                        return null;
-                    }).filter(alert => alert !== null);
-                    console.log('Alertas carregados:', alertas);
+                    });
                 })
                 .catch(error => {
                     console.error('Erro ao carregar alertas:', error);
@@ -187,11 +182,11 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM completamente carregado e analisado');
-            carregarAlertas();
+            fetchAlerts();
             setInterval(updateDateTime, 1000);
             updateDateTime(); // Atualiza imediatamente ao carregar
         });
     </script>
 </body>
+
 </html>
