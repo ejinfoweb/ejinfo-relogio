@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap">
     <style>
         body {
-            background-color: black; /* Fundo preto */
+            background-color: black;
             color: white;
             font-family: 'Roboto', sans-serif;
             text-align: center;
@@ -22,22 +22,22 @@
 
         .current-date {
             color: white;
-            font-size: 7vw; /* Tamanho de fonte responsivo para a data */
+            font-size: 7vw;
         }
 
         .day {
             color: yellow;
-            font-size: 6vw; /* Tamanho de fonte responsivo para o dia da semana */
+            font-size: 6vw;
         }
 
         .clock {
-            font-size: 12vw; /* Tamanho de fonte responsivo */
+            font-size: 12vw;
             color: white;
             letter-spacing: 5px;
         }
 
         .shift {
-            font-size: 8vw; /* Tamanho de fonte responsivo */
+            font-size: 8vw;
             color: #32CD32;
         }
 
@@ -47,8 +47,6 @@
             border-radius: 10px;
             text-align: center;
             color: white;
-            position: relative;
-            width: 100%;
         }
 
         .alert-item {
@@ -56,13 +54,9 @@
             color: yellow;
             padding: 30px;
             border-radius: 10px;
-            font-size: 6vw; /* Fonte responsiva */
+            font-size: 6vw;
             font-weight: bold;
             text-transform: uppercase;
-            text-align: center;
-            width: calc(100% - 40px);
-            box-sizing: border-box;
-            max-width: 100%;
         }
 
         .no-alerts {
@@ -80,24 +74,22 @@
     <div class="clock" id="clock"></div>
     <div class="shift" id="shift"></div>
 
-    <!-- Seção de Alertas -->
     <div class="alerts-section">
         <div id="alertList" class="no-alerts">Carregando alertas...</div>
     </div>
 
-    <!-- Arquivo de áudio -->
     <audio id="alertSound" src="https://ejinfoweb.github.io/ejinfo-relogio/alarme.wav" preload="auto"></audio>
 
     <script>
         const alerts = [];
-        const alertsFileUrl = 'https://ejinfoweb.github.io/ejinfo-relogio/alertas.txt';
+        const alertFileUrl = 'https://raw.githubusercontent.com/ejinfoweb/ejinfo-relogio/refs/heads/main/alertas.txt';
 
         function updateDateTime() {
             const now = new Date();
             const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
             const day = days[now.getDay()];
             const date = now.toLocaleDateString('pt-BR');
-            
+
             document.getElementById('currentDate').innerHTML = date;
             document.getElementById('day').innerHTML = day;
 
@@ -108,7 +100,7 @@
             minutes = minutes < 10 ? '0' + minutes : minutes;
             seconds = seconds < 10 ? '0' + seconds : seconds;
             const timeString = `${hours}:${minutes}:${seconds}`;
-            
+
             document.getElementById('clock').innerHTML = timeString;
 
             let shift = '';
@@ -158,20 +150,20 @@
 
         function playAlarm() {
             const alertSound = document.getElementById('alertSound');
-            alertSound.currentTime = 0; // Reinicia o áudio
+            alertSound.currentTime = 0;
             alertSound.play();
         }
 
         function fetchAlerts() {
-            fetch(alertsFileUrl)
+            fetch(alertFileUrl)
                 .then(response => response.text())
                 .then(data => {
-                    alerts.length = 0;
                     const lines = data.split('\n');
+                    alerts.length = 0;
                     lines.forEach(line => {
-                        const [hour, message] = line.split(',');
-                        if (hour && message) {
-                            alerts.push({ hour, message });
+                        const [time, message] = line.split(',');
+                        if (time && message) {
+                            alerts.push({ hour: time, message: message });
                         }
                     });
                 })
@@ -184,7 +176,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchAlerts();
             setInterval(updateDateTime, 1000);
-            updateDateTime(); // Atualiza imediatamente ao carregar
+            updateDateTime();
         });
     </script>
 </body>
