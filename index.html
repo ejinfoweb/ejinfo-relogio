@@ -163,7 +163,7 @@
                     lines.forEach(line => {
                         const [time, message] = line.split(',');
                         if (time && message) {
-                            alerts.push({ hour: time, message: message });
+                            alerts.push({ hour: time.trim(), message: message.trim() });
                         }
                     });
                 })
