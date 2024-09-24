@@ -67,16 +67,19 @@
             border-radius: 10px;
             text-align: center;
             color: white;
+            max-height: 50%; /* Altura máxima para a seção de alertas */
+            overflow-y: auto; /* Permite rolagem se o conteúdo exceder */
         }
 
         .alert-item {
             background-color: red;
             color: yellow;
-            padding: 30px;
+            padding: 10px; /* Reduzido o padding para economizar espaço */
             border-radius: 10px;
             font-size: 6vw; /* Ajuste o tamanho da fonte */
             font-weight: bold;
             text-transform: uppercase;
+            margin-bottom: 10px; /* Espaçamento entre os alertas */
         }
 
         .no-alerts {
@@ -208,15 +211,15 @@
         function renderAlerts(alertsToShow) {
             const alertList = document.getElementById('alertList');
             alertList.innerHTML = '';
-            if (alertsToShow.length === 0) {
-                alertList.innerHTML = ''; // Remover a mensagem duplicada
-            } else {
-                alertsToShow.forEach((alert) => {
+            if (alertsToShow.length > 0) {
+                alertsToShow.forEach(alert => {
                     const alertItem = document.createElement('div');
-                    alertItem.className = 'alert-item';
-                    alertItem.innerHTML = alert;
+                    alertItem.classList.add('alert-item');
+                    alertItem.textContent = alert;
                     alertList.appendChild(alertItem);
                 });
+            } else {
+                alertList.textContent = 'Sem alertas no momento.';
             }
         }
 
