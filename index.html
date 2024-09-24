@@ -44,7 +44,7 @@
         }
 
         .clock {
-            font-size: 10vw; /* Ajuste o tamanho da fonte */
+            font-size: 12vw; /* Aumenta o tamanho da fonte de forma responsiva */
             color: white;
             letter-spacing: 5px;
             text-align: center; /* Centraliza o texto */
@@ -96,7 +96,7 @@
         }
 
         .image-title {
-            color: green; /* Altera a cor do texto para verde */
+            color: lime; /* Altera a cor do texto para verde-limão */
             font-size: 2.5vw; /* Tamanho do texto para o título */
             font-weight: bold;
             position: absolute; /* Posiciona o título dentro do contêiner da imagem */
@@ -133,7 +133,7 @@
 
     <div class="right-panel">
         <div class="image-container">
-            <div class="image-title">❤️ Família da Franci: ❤️</div>
+            <div class="image-title">❤️ Família ❤️</div>
             <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
         </div>
     </div>
@@ -189,7 +189,7 @@
             const alertList = document.getElementById('alertList');
             alertList.innerHTML = '';
             if (alertsToShow.length === 0) {
-                alertList.innerHTML = 'Franci, sua família te ama! ❤️';
+                alertList.innerHTML = ''; // Remover a mensagem duplicada
             } else {
                 alertsToShow.forEach((alert) => {
                     const alertItem = document.createElement('div');
@@ -238,16 +238,17 @@
                 });
         }
 
-        function fetchRandomImage() {
+        function setRandomImage() {
             const randomIndex = Math.floor(Math.random() * imageUrls.length);
-            const randomImage = document.getElementById('randomImageRight');
-            randomImage.src = imageUrls[randomIndex];
+            document.getElementById('randomImageRight').src = imageUrls[randomIndex];
         }
 
         setInterval(updateDateTime, 1000);
         fetchAlerts();
-        fetchRandomImage();
-        setInterval(fetchRandomImage, 5000);
+        setRandomImage();
+
+        // Troca a imagem a cada 10 segundos
+        setInterval(setRandomImage, 10000);
     </script>
 </body>
 
