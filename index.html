@@ -32,29 +32,33 @@
             position: relative; /* Para permitir o posicionamento absoluto dos elementos internos */
         }
 
+        .current-date,
+        .day,
+        .clock,
+        .shift {
+            text-align: center; /* Centraliza o texto */
+            margin: 0; /* Remove margens */
+        }
+
         .current-date {
             color: white;
-            font-size: 5vw; /* Ajuste o tamanho da fonte */
-            text-align: center; /* Centraliza o texto */
+            font-size: 8vw; /* Ajuste o tamanho da fonte */
         }
 
         .day {
             color: yellow;
-            font-size: 4vw; /* Ajuste o tamanho da fonte */
-            text-align: center; /* Centraliza o texto */
+            font-size: 7vw; /* Ajuste o tamanho da fonte */
         }
 
         .clock {
-            font-size: 12vw; /* Aumenta o tamanho da fonte de forma responsiva */
+            font-size: 15vw; /* Aumenta o tamanho da fonte de forma responsiva */
             color: white;
             letter-spacing: 5px;
-            text-align: center; /* Centraliza o texto */
         }
 
         .shift {
-            font-size: 5vw; /* Ajuste o tamanho da fonte */
+            font-size: 6vw; /* Ajuste o tamanho da fonte */
             color: #32CD32;
-            text-align: center; /* Centraliza o texto */
         }
 
         .alerts-section {
@@ -70,13 +74,13 @@
             color: yellow;
             padding: 30px;
             border-radius: 10px;
-            font-size: 5vw; /* Ajuste o tamanho da fonte */
+            font-size: 6vw; /* Ajuste o tamanho da fonte */
             font-weight: bold;
             text-transform: uppercase;
         }
 
         .no-alerts {
-            font-size: 4vw; /* Ajuste o tamanho da fonte */
+            font-size: 5vw; /* Ajuste o tamanho da fonte */
             color: white;
         }
 
@@ -99,12 +103,11 @@
         .image-title {
             background-color: rgba(255, 255, 255, 0.6); /* Fundo branco opaco */
             color: black; /* Cor do texto */
-            font-size: 3vw; /* Tamanho do texto para o título */
+            font-size: 5vw; /* Tamanho do texto para o título */
             font-weight: bold;
             position: absolute; /* Posiciona o título dentro do contêiner da imagem */
             top: 10px; /* Distância do topo */
-            right: 50%; /* Para centralizar */
-            transform: translateX(50%); /* Ajusta a centralização */
+            left: 10px; /* Alinha à esquerda */
             padding: 5px 10px; /* Espaçamento interno */
             border-radius: 5px; /* Arredonda os cantos */
             z-index: 1; /* Garante que o título fique acima da imagem */
@@ -115,18 +118,17 @@
             bottom: 20px; /* Distância do fundo */
             left: 50%; /* Para centralizar */
             transform: translateX(-50%); /* Ajusta a centralização */
-            font-size: 4vw; /* Ajuste o tamanho da fonte da mensagem */
+            font-size: 5vw; /* Ajuste o tamanho da fonte da mensagem */
             color: white;
             text-align: center; /* Centraliza o texto */
+            margin-top: 10px; /* Espaçamento superior */
         }
 
         .family-title {
             position: absolute;
             top: 10px; /* Distância do topo */
-            left: 0;
-            right: 0;
-            text-align: center; /* Centraliza o texto */
-            font-size: 3vw; /* Ajuste o tamanho da fonte */
+            left: 10px; /* Alinha à esquerda */
+            font-size: 4vw; /* Ajuste o tamanho da fonte */
             color: lime; /* Cor verde limão */
             background-color: rgba(255, 255, 255, 0.6); /* Fundo branco opaco */
             padding: 5px 10px; /* Espaçamento interno */
@@ -213,56 +215,41 @@
                 alertsToShow.forEach((alert) => {
                     const alertItem = document.createElement('div');
                     alertItem.className = 'alert-item';
-                    alertItem.innerHTML = `<span>${alert.message}</span>`;
+                    alertItem.innerHTML = alert;
                     alertList.appendChild(alertItem);
                 });
             }
         }
 
-        function checkAlerts(hours, minutes, seconds) {
-            const currentTime = `${hours}:${minutes}`;
-            const alertsToShow = alerts.filter(alert => alert.hour === currentTime);
-            renderAlerts(alertsToShow);
-            if (alertsToShow.length > 0) {
-                const alertSound = document.getElementById('alertSound');
-                alertSound.currentTime = 0; // Reinicia o som
-                alertSound.play();
-
-                setTimeout(() => {
-                    alertSound.pause(); // Para o som após 20 segundos
-                }, 20000);
+        async function fetchAlerts() {
+            const response = await fetch(alertFileUrl);
+            const text = await response.text();
+            const lines = text.split('\n');
+            for (const line of lines) {
+                const [time, alert] = line.split(',');
+                if (time && alert) {
+                    alerts.push({ time: time.trim(), alert: alert.trim() });
+                }
             }
+            console.log('Alertas carregados:', alerts);
+            updateAlerts();
         }
 
-        function fetchAlerts() {
-            fetch(alertFileUrl)
-                .then(response => response.text())
-                .then(data => {
-                    const lines = data.split('\n');
-                    alerts.length = 0; // Limpa a lista de alertas
-                    lines.forEach(line => {
-                        const [time, message] = line.split(',');
-                        if (time && message) {
-                            alerts.push({ hour: time, message: message });
-                        }
-                    });
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar alertas:', error);
-                });
+        function checkAlerts(hours, minutes, seconds) {
+            const currentTime = `${hours}:${minutes}`;
+            const alertsToShow = alerts.filter(alert => alert.time === currentTime).map(alert => alert.alert);
+            renderAlerts(alertsToShow);
         }
 
         function setRandomImage() {
             const randomIndex = Math.floor(Math.random() * imageUrls.length);
-            document.getElementById('randomImageRight').src = imageUrls[randomIndex];
+            const randomImage = document.getElementById('randomImageRight');
+            randomImage.src = imageUrls[randomIndex];
         }
 
-        setInterval(updateDateTime, 1000);
-        fetchAlerts();
         setRandomImage();
-
-        // Troca a imagem a cada 10 segundos
-        setInterval(setRandomImage, 10000);
+        fetchAlerts();
+        setInterval(updateDateTime, 1000);
     </script>
 </body>
 
