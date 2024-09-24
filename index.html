@@ -41,6 +41,12 @@
             text-align: center;
         }
 
+        .date {
+            font-size: 4vw;
+            color: white;
+            margin-bottom: 10px;
+        }
+
         .photo-container {
             width: 100%;
             height: 90%; /* Aumente para ajustar a altura do quadro */
@@ -75,23 +81,19 @@
             text-transform: uppercase;
             margin-top: 10px;
         }
-
-        .no-alerts {
-            font-size: 4vw;
-            color: white;
-        }
     </style>
 </head>
 
 <body>
     <div class="left-side">
+        <div class="date" id="date"></div>
         <div class="clock" id="clock"></div>
         <div class="shift" id="shift"></div>
-        <div class="alerts-section" id="alertList" class="no-alerts">Carregando alertas...</div>
+        <div class="alerts-section" id="alertList"></div>
     </div>
     <div class="right-side">
         <div class="photo-container">
-            <img id="randomPhoto" class="photo" src="" alt="Foto da Família">
+            <img id="randomPhoto" class="photo" src="" alt="Foto">
         </div>
     </div>
 
@@ -127,6 +129,10 @@
 
         function updateDateTime() {
             const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('pt-BR', options);
+            document.getElementById('date').innerHTML = dateString;
+
             let hours = now.getHours();
             let minutes = now.getMinutes();
             let seconds = now.getSeconds();
@@ -155,16 +161,12 @@
         function renderAlerts(alertsToShow) {
             const alertList = document.getElementById('alertList');
             alertList.innerHTML = '';
-            if (alertsToShow.length === 0) {
-                alertList.innerHTML = 'Sem alertas.';
-            } else {
-                alertsToShow.forEach((alert) => {
-                    const alertItem = document.createElement('div');
-                    alertItem.className = 'alert-item';
-                    alertItem.innerHTML = `<span>${alert.message}</span>`;
-                    alertList.appendChild(alertItem);
-                });
-            }
+            alertsToShow.forEach((alert) => {
+                const alertItem = document.createElement('div');
+                alertItem.className = 'alert-item';
+                alertItem.innerHTML = `<span>${alert.message}</span>`;
+                alertList.appendChild(alertItem);
+            });
         }
 
         function checkAlerts(currentHour, currentMinute, currentSecond) {
@@ -202,7 +204,6 @@
                 })
                 .catch(error => {
                     console.error('Erro ao carregar alertas:', error);
-                    document.getElementById('alertList').innerText = 'Erro ao carregar alertas.';
                 });
         }
 
