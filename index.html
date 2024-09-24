@@ -15,6 +15,7 @@
             padding: 20px;
             display: flex; /* Usa Flexbox para layout */
             height: 100vh; /* Altura total da visualização */
+            overflow: hidden; /* Evita barras de rolagem */
         }
 
         .left-panel {
@@ -96,12 +97,16 @@
         }
 
         .image-title {
-            color: lime; /* Altera a cor do texto para verde-limão */
-            font-size: 2.5vw; /* Tamanho do texto para o título */
+            background-color: rgba(255, 255, 255, 0.6); /* Fundo branco opaco */
+            color: black; /* Cor do texto */
+            font-size: 3vw; /* Tamanho do texto para o título */
             font-weight: bold;
             position: absolute; /* Posiciona o título dentro do contêiner da imagem */
             top: 10px; /* Distância do topo */
-            right: 10px; /* Distância do lado direito */
+            right: 50%; /* Para centralizar */
+            transform: translateX(50%); /* Ajusta a centralização */
+            padding: 5px 10px; /* Espaçamento interno */
+            border-radius: 5px; /* Arredonda os cantos */
             z-index: 1; /* Garante que o título fique acima da imagem */
         }
 
@@ -225,7 +230,7 @@
                 .then(response => response.text())
                 .then(data => {
                     const lines = data.split('\n');
-                    alerts.length = 0;
+                    alerts.length = 0; // Limpa a lista de alertas
                     lines.forEach(line => {
                         const [time, message] = line.split(',');
                         if (time && message) {
