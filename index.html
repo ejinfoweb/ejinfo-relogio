@@ -13,20 +13,21 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             display: flex;
-            height: 100vh; /* Altura da tela */
-            overflow: hidden; /* Remove barras de rolagem */
+            flex-direction: row;
+            height: 100vh;
+            overflow: hidden; /* Sem barra de rolagem */
         }
 
-        .left-side {
+        .left {
             width: 55%;
-            padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Centraliza verticalmente */
-            align-items: center; /* Centraliza horizontalmente */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
 
-        .right-side {
+        .right {
             width: 45%;
             display: flex;
             justify-content: center;
@@ -34,81 +35,74 @@
             position: relative;
         }
 
-        .date {
-            font-size: 4vw; /* Tamanho responsivo */
+        .current-date {
             color: white;
-            margin-bottom: 10px;
+            font-size: 3vw; /* Ajuste responsivo */
         }
 
         .day {
-            font-size: 4vw; /* Tamanho responsivo */
             color: yellow;
-            margin-bottom: 10px;
+            font-size: 3vw; /* Ajuste responsivo */
         }
 
         .clock {
-            font-size: 10vw; /* Tamanho responsivo */
+            font-size: 5vw; /* Ajuste responsivo */
             color: white;
-            letter-spacing: 5px;
-            text-align: center;
+            margin: 10px 0;
         }
 
         .shift {
-            font-size: 5vw; /* Tamanho responsivo */
-            color: #32CD32; /* Verde limão */
-            text-align: center;
-        }
-
-        .photo-container {
-            width: 90%; /* Mantém a largura da moldura */
-            height: 70%; /* Altura fixa da moldura */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 5px solid rgba(0, 255, 0, 0.2); /* Verde bem fraquinho */
-            overflow: hidden;
-            border-radius: 15px;
-            position: relative;
-        }
-
-        .photo {
-            width: 100%; /* Adapta a largura da imagem à moldura */
-            height: 100%; /* Adapta a altura da imagem à moldura */
-            object-fit: cover; /* Para manter a proporção da imagem */
-            border-radius: 15px;
+            font-size: 4vw; /* Ajuste responsivo */
+            color: #32CD32;
+            margin: 5px 0;
         }
 
         .alerts-section {
-            margin-top: 20px;
+            margin-top: 10px;
             color: white;
-            width: 100%; /* Para evitar que a seção de alertas ultrapasse a largura */
         }
 
         .alert-item {
             background-color: red;
             color: yellow;
-            padding: 15px;
+            padding: 10px;
             border-radius: 10px;
-            font-size: 4vw; /* Tamanho responsivo */
+            font-size: 2.5vw; /* Ajuste responsivo */
             font-weight: bold;
             text-transform: uppercase;
-            margin-top: 10px;
-            text-align: center; /* Centraliza o texto do alerta */
+        }
+
+        .photo-frame {
+            border: 5px solid rgba(50, 205, 50, 0.5); /* Verde limão claro */
+            width: 80%; /* Largura da moldura */
+            height: 90%; /* Altura da moldura */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Para não deformar a imagem */
+            position: relative;
+        }
+
+        .photo {
+            width: auto; /* A foto se adapta ao quadro */
+            height: 100%; /* A foto se adapta ao quadro */
+            object-fit: contain; /* Mantém a proporção da foto */
+            position: absolute; /* Para centralizar a foto */
         }
     </style>
 </head>
 
 <body>
-    <div class="left-side">
-        <div class="date" id="date"></div>
+    <div class="left">
+        <div class="current-date" id="currentDate"></div>
         <div class="day" id="day"></div>
         <div class="clock" id="clock"></div>
         <div class="shift" id="shift"></div>
         <div class="alerts-section" id="alertList"></div>
     </div>
-    <div class="right-side">
-        <div class="photo-container">
-            <img id="randomPhoto" class="photo" src="" alt="Foto">
+    <div class="right">
+        <div class="photo-frame">
+            <img id="photo" class="photo" src="https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem1.jpg" alt="Foto aleatória">
         </div>
     </div>
 
@@ -117,7 +111,7 @@
     <script>
         const alerts = [];
         const alertFileUrl = 'https://ejinfoweb.github.io/ejinfo-relogio/alertas.txt';
-        const photoUrls = [
+        const photos = [
             'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem1.jpg',
             'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem2.jpg',
             'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem3.jpg',
@@ -144,20 +138,18 @@
 
         function updateDateTime() {
             const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = now.toLocaleDateString('pt-BR', options);
-            document.getElementById('date').innerHTML = dateString;
+            const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+            const day = days[now.getDay()];
+            const date = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
-            const dayString = now.toLocaleDateString('pt-BR', { weekday: 'long' });
-            document.getElementById('day').innerHTML = dayString.charAt(0).toUpperCase() + dayString.slice(1); // Primeira letra maiúscula
+            document.getElementById('currentDate').innerHTML = date;
+            document.getElementById('day').innerHTML = day;
 
             let hours = now.getHours();
             let minutes = now.getMinutes();
-            let seconds = now.getSeconds();
-            hours = hours < 10 ? '0' + hours : hours;
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
-            const timeString = `${hours}:${minutes}:${seconds}`;
+            let formattedMinute = minutes < 10 ? '0' + minutes : minutes;
+            const timeString = `${hours < 10 ? '0' + hours : hours}:${formattedMinute}`;
+
             document.getElementById('clock').innerHTML = timeString;
 
             let shift = '';
@@ -173,27 +165,29 @@
 
             document.getElementById('shift').innerHTML = shift;
 
-            checkAlerts(hours, minutes, seconds);
+            checkAlerts(hours, minutes);
         }
 
         function renderAlerts(alertsToShow) {
             const alertList = document.getElementById('alertList');
             alertList.innerHTML = '';
-            alertsToShow.forEach((alert) => {
-                const alertItem = document.createElement('div');
-                alertItem.className = 'alert-item';
-                alertItem.innerHTML = `<span>${alert.message}</span>`;
-                alertList.appendChild(alertItem);
-            });
+            if (alertsToShow.length > 0) {
+                alertsToShow.forEach((alert) => {
+                    const alertItem = document.createElement('div');
+                    alertItem.className = 'alert-item';
+                    alertItem.innerHTML = `<span>${alert.message}</span>`;
+                    alertList.appendChild(alertItem);
+                });
+            }
         }
 
-        function checkAlerts(currentHour, currentMinute, currentSecond) {
+        function checkAlerts(currentHour, currentMinute) {
             const formattedMinute = currentMinute < 10 ? '0' + currentMinute : currentMinute;
             const currentTime = `${currentHour}:${formattedMinute}`;
 
             const activeAlerts = alerts.filter(alert => alert.hour === currentTime);
 
-            if (activeAlerts.length > 0 && currentSecond < 15) {
+            if (activeAlerts.length > 0) {
                 playAlarm();
                 renderAlerts(activeAlerts);
             } else {
@@ -207,30 +201,31 @@
             alertSound.play();
         }
 
-        async function loadAlerts() {
-            const response = await fetch(alertFileUrl);
-            const text = await response.text();
-            const lines = text.split('\n');
-
-            lines.forEach(line => {
-                const [time, message] = line.split(',');
-                alerts.push({ hour: time.trim(), message: message.trim() });
-            });
+        function fetchAlerts() {
+            fetch(alertFileUrl)
+                .then(response => response.text())
+                .then(data => {
+                    const lines = data.split('\n');
+                    alerts.length = 0;
+                    lines.forEach(line => {
+                        const [time, message] = line.split(',');
+                        if (time && message) {
+                            alerts.push({ hour: time.trim(), message: message.trim() });
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching alerts:', error));
         }
 
-        function setRandomPhoto() {
-            const randomIndex = Math.floor(Math.random() * photoUrls.length);
-            document.getElementById('randomPhoto').src = photoUrls[randomIndex];
+        function changePhoto() {
+            const photo = document.getElementById('photo');
+            const randomIndex = Math.floor(Math.random() * photos.length);
+            photo.src = photos[randomIndex];
         }
 
-        async function init() {
-            await loadAlerts();
-            setRandomPhoto();
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
-        }
-
-        init();
+        setInterval(updateDateTime, 1000);
+        setInterval(changePhoto, 15000);
+        fetchAlerts();
     </script>
 </body>
 
