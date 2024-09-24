@@ -64,6 +64,10 @@
             color: #32CD32;
         }
 
+        .shift.madrugada {
+            font-size: 6vw; /* Reduz a fonte para Madrugada */
+        }
+
         .alerts-section {
             margin-top: 20px;
             padding: 20px;
@@ -170,12 +174,18 @@
             let shift = '';
             if (hours >= 0 && hours < 6) {
                 shift = '😴 Madrugada 😴';
-            } else if (hours >= 6 && hours < 12) {
-                shift = '🌅 Manhã 🌅';
-            } else if (hours >= 12 && hours < 18) {
-                shift = '☀️ Tarde ☀️';
+                document.getElementById('shift').classList.add('madrugada'); // Adiciona classe para ajustar a fonte
             } else {
+                shift = '🌅 Manhã 🌅';
+                document.getElementById('shift').classList.remove('madrugada'); // Remove classe para outros turnos
+            }
+
+            if (hours >= 12 && hours < 18) {
+                shift = '☀️ Tarde ☀️';
+                document.getElementById('shift').classList.remove('madrugada');
+            } else if (hours >= 18) {
                 shift = '🌙 Noite 🌙';
+                document.getElementById('shift').classList.remove('madrugada');
             }
 
             document.getElementById('shift').innerHTML = shift;
@@ -217,7 +227,7 @@
             randomImage.src = imageUrls[randomIndex];
         }
 
-        setRandomImage(); 
+        setRandomImage();
         setInterval(setRandomImage, 15000);
         setInterval(updateDateTime, 1000);
         fetchAlerts();
