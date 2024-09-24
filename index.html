@@ -13,54 +13,54 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 20px;
-            display: flex; /* Usa Flexbox para layout */
-            height: 100vh; /* Altura total da visualização */
-            overflow: hidden; /* Evita barras de rolagem */
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .left-panel {
-            width: 55%; /* Largura para o painel esquerdo */
-            padding-right: 20px; /* Espaçamento entre os painéis */
+            width: 55%;
+            padding-right: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Centraliza verticalmente */
-            align-items: center; /* Centraliza horizontalmente */
+            justify-content: center;
+            align-items: center;
         }
 
         .right-panel {
-            width: 45%; /* Largura para o painel direito */
-            display: flex; /* Para centralizar o conteúdo */
-            justify-content: center; /* Centraliza horizontalmente */
-            align-items: center; /* Centraliza verticalmente */
-            position: relative; /* Para permitir o posicionamento absoluto dos elementos internos */
+            width: 45%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
         }
 
         .current-date,
         .day,
         .clock,
         .shift {
-            text-align: center; /* Centraliza o texto */
-            margin: 0; /* Remove margens */
+            text-align: center;
+            margin: 0;
         }
 
         .current-date {
             color: white;
-            font-size: 7vw; /* Ajuste o tamanho da fonte */
+            font-size: 7vw;
         }
 
         .day {
             color: yellow;
-            font-size: 7vw; /* Ajuste o tamanho da fonte */
+            font-size: 7vw;
         }
 
         .clock {
-            font-size: 12vw; /* Diminuído o tamanho da fonte de forma responsiva */
+            font-size: 12vw;
             color: white;
             letter-spacing: 5px;
         }
 
         .shift {
-            font-size: 8vw; /* Aumentado o tamanho da fonte do turno */
+            font-size: 8vw;
             color: #32CD32;
         }
 
@@ -70,74 +70,73 @@
             border-radius: 10px;
             text-align: center;
             color: white;
-            display: none; /* Inicialmente oculta a seção de alertas */
+            display: none;
         }
 
         .alert-item {
             background-color: red;
             color: yellow;
-            padding: 10px; /* Reduzido o padding para economizar espaço */
+            padding: 10px;
             border-radius: 10px;
-            font-size: 6vw; /* Ajuste o tamanho da fonte */
+            font-size: 6vw;
             font-weight: bold;
             text-transform: uppercase;
-            margin-bottom: 10px; /* Espaçamento entre os alertas */
+            margin-bottom: 10px;
         }
 
         .no-alerts {
-            font-size: 5vw; /* Ajuste o tamanho da fonte */
+            font-size: 5vw;
             color: white;
         }
 
         .image-container {
-            position: relative; /* Para permitir o posicionamento de outros elementos dentro */
-            width: 90%; /* A moldura ocupa 90% da largura do painel direito */
-            height: 70%; /* Aumentado para ser maior verticalmente */
-            overflow: hidden; /* Para esconder qualquer parte da imagem que exceda o contêiner */
-            display: flex; /* Para centralizar a imagem */
-            justify-content: center; /* Centraliza horizontalmente */
-            align-items: center; /* Centraliza verticalmente */
+            position: relative;
+            width: 90%;
+            height: 80%; /* Aumentado para dar mais espaço vertical */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .image-frame {
-            position: relative; /* Para permitir o posicionamento de outros elementos dentro */
-            width: 100%; /* A moldura ocupa toda a largura do contêiner */
-            height: 100%; /* A moldura ocupa toda a altura do contêiner */
-            border: 10px solid rgba(255, 20, 147, 0.7); /* Cor da moldura (rosa choque) */
-            border-radius: 15px; /* Bordas arredondadas */
-            box-shadow: 0 0 15px rgba(255, 20, 147, 0.7); /* Sombra da moldura */
-            overflow: hidden; /* Para esconder qualquer parte da imagem que exceda a moldura */
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border: 15px solid rgba(255, 20, 147, 0.7);
+            border-radius: 20px; /* Bordas mais arredondadas */
+            box-shadow: 0 0 25px rgba(255, 20, 147, 0.7); /* Sombra mais pronunciada */
+            overflow: hidden;
         }
 
         img {
-            width: 100%; /* A imagem vai se ajustar ao contêiner */
-            height: auto; /* A altura é automática para manter a proporção */
-            object-fit: cover; /* Mantém a proporção da imagem, cobrindo o espaço do contêiner */
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Garante que a imagem se ajuste sem deformação */
         }
 
         .image-title {
-            background-color: rgba(255, 255, 255, 0.6); /* Fundo branco opaco */
-            color: black; /* Cor do texto */
-            font-size: 5vw; /* Tamanho do texto para o título */
-            font-weight: bold;
-            position: absolute; /* Posiciona o título dentro do contêiner da imagem */
+            position: absolute;
             top: 10px; /* Distância do topo */
-            left: 10px; /* Alinha à esquerda */
+            left: 50%; /* Centraliza horizontalmente */
+            transform: translateX(-50%); /* Corrige a centralização */
+            font-size: 4vw; /* Tamanho do texto para o título */
+            color: hotpink; /* Cor rosa choque */
+            background-color: rgba(255, 255, 255, 0.7); /* Fundo branco opaco */
             padding: 5px 10px; /* Espaçamento interno */
-            border-radius: 5px; /* Arredonda os cantos */
+            border-radius: 10px; /* Bordas arredondadas */
             z-index: 1; /* Garante que o título fique acima da imagem */
         }
 
         .family-title {
             position: absolute;
-            top: 10px; /* Distância do topo */
+            bottom: 10px; /* Distância do fundo */
             left: 50%; /* Centraliza horizontalmente */
             transform: translateX(-50%); /* Corrige a centralização */
-            font-size: 3.5vw; /* Ajuste o tamanho da fonte */
+            font-size: 4vw; /* Ajuste o tamanho da fonte */
             color: hotpink; /* Cor rosa choque */
-            background-color: rgba(255, 255, 255, 0.6); /* Fundo branco opaco */
+            background-color: rgba(255, 255, 255, 0.7); /* Fundo branco opaco */
             padding: 5px 10px; /* Espaçamento interno */
-            border-radius: 5px; /* Arredonda os cantos */
+            border-radius: 10px; /* Bordas arredondadas */
             z-index: 1; /* Garante que o título fique acima da imagem */
         }
     </style>
@@ -157,9 +156,10 @@
 
     <div class="right-panel">
         <div class="image-container">
-            <div class="image-frame"> <!-- Moldura adicionada aqui -->
-                <div class="image-title family-title">❤️ Família ❤️</div>
+            <div class="image-frame">
                 <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
+                <div class="image-title">❤️ Família ❤️</div>
+                <div class="family-title">Família</div> <!-- Aqui foi ajustada a posição da palavra Família -->
             </div>
         </div>
     </div>
@@ -217,19 +217,19 @@
             const currentTime = `${hours}:${minutes}`;
             const alertsToShow = alerts.filter(alert => alert.startsWith(currentTime));
 
-            alertList.innerHTML = ''; // Limpa a lista de alertas
+            alertList.innerHTML = '';
 
             if (alertsToShow.length > 0) {
-                alertsSection.style.display = 'block'; // Mostra a seção de alertas
+                alertsSection.style.display = 'block';
                 alertsToShow.forEach(alert => {
                     const alertItem = document.createElement('div');
                     alertItem.classList.add('alert-item');
-                    alertItem.textContent = alert.split(',')[1]; // Mostra apenas a parte do alerta
+                    alertItem.textContent = alert.split(',')[1];
                     alertList.appendChild(alertItem);
-                    document.getElementById('alertSound').play(); // Toca o som do alerta
+                    document.getElementById('alertSound').play();
                 });
             } else {
-                alertsSection.style.display = 'none'; // Esconde a seção se não houver alertas
+                alertsSection.style.display = 'none';
             }
         }
 
@@ -239,19 +239,16 @@
             alerts.push(...data.split('\n').filter(line => line.trim() !== ''));
         }
 
-        // Função para definir uma imagem aleatória
         function setRandomImage() {
             const randomIndex = Math.floor(Math.random() * imageUrls.length);
             const randomImage = document.getElementById('randomImageRight');
             randomImage.src = imageUrls[randomIndex];
         }
 
-        // Muda a imagem a cada 15 segundos
-        setRandomImage(); // Chama uma vez imediatamente
-        setInterval(setRandomImage, 15000); // Muda a imagem a cada 15 segundos
-
-        setInterval(updateDateTime, 1000); // Atualiza a hora a cada segundo
-        fetchAlerts(); // Carrega os alertas
+        setRandomImage(); 
+        setInterval(setRandomImage, 15000);
+        setInterval(updateDateTime, 1000);
+        fetchAlerts();
     </script>
 </body>
 
