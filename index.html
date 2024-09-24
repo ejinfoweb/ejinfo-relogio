@@ -20,36 +20,44 @@
         .left-panel {
             width: 70%; /* Largura para o painel esquerdo */
             padding-right: 20px; /* Espaçamento entre os painéis */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centraliza verticalmente */
+            align-items: center; /* Centraliza horizontalmente */
         }
 
         .right-panel {
-            width: 20%; /* Largura para o painel direito */
+            width: 30%; /* Largura para o painel direito */
             position: relative; /* Para permitir o posicionamento absoluto dos elementos internos */
         }
 
         .current-date {
             color: white;
-            font-size: 7vw;
+            font-size: 5vw; /* Ajuste o tamanho da fonte */
+            text-align: center; /* Centraliza o texto */
         }
 
         .day {
             color: yellow;
-            font-size: 6vw;
+            font-size: 4vw; /* Ajuste o tamanho da fonte */
+            text-align: center; /* Centraliza o texto */
         }
 
         .clock {
-            font-size: 12vw;
+            font-size: 10vw; /* Ajuste o tamanho da fonte */
             color: white;
             letter-spacing: 5px;
+            text-align: center; /* Centraliza o texto */
         }
 
         .shift {
-            font-size: 8vw;
+            font-size: 5vw; /* Ajuste o tamanho da fonte */
             color: #32CD32;
+            text-align: center; /* Centraliza o texto */
         }
 
         .alerts-section {
-            margin-top: 40px;
+            margin-top: 20px;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -61,13 +69,13 @@
             color: yellow;
             padding: 30px;
             border-radius: 10px;
-            font-size: 6vw;
+            font-size: 5vw; /* Ajuste o tamanho da fonte */
             font-weight: bold;
             text-transform: uppercase;
         }
 
         .no-alerts {
-            font-size: 5vw;
+            font-size: 4vw; /* Ajuste o tamanho da fonte */
             color: white;
         }
 
@@ -89,12 +97,22 @@
 
         .image-title {
             color: green; /* Altera a cor do texto para verde */
-            font-size: 3vw; /* Tamanho do texto para o título */
+            font-size: 2.5vw; /* Tamanho do texto para o título */
             font-weight: bold;
             position: absolute; /* Posiciona o título dentro do contêiner da imagem */
             top: 10px; /* Distância do topo */
             right: 10px; /* Distância do lado direito */
             z-index: 1; /* Garante que o título fique acima da imagem */
+        }
+
+        .family-message {
+            position: absolute; /* Para centralizar a mensagem */
+            bottom: 20px; /* Distância do fundo */
+            left: 50%; /* Para centralizar */
+            transform: translateX(-50%); /* Ajusta a centralização */
+            font-size: 4vw; /* Ajuste o tamanho da fonte da mensagem */
+            color: white;
+            text-align: center; /* Centraliza o texto */
         }
     </style>
 </head>
@@ -109,6 +127,8 @@
         <div class="alerts-section">
             <div id="alertList" class="no-alerts">Carregando alertas...</div>
         </div>
+
+        <div class="family-message">Franci, sua família te ama! ❤️</div>
     </div>
 
     <div class="right-panel">
@@ -214,23 +234,20 @@
                     });
                 })
                 .catch(error => {
-                    console.error('Erro ao carregar alertas:', error);
-                    document.getElementById('alertList').innerText = 'Erro ao carregar alertas.';
+                    console.error('Erro ao buscar alertas:', error);
                 });
         }
 
-        function showRandomImages() {
-            const randomIndexRight = Math.floor(Math.random() * imageUrls.length);
-            document.getElementById('randomImageRight').src = imageUrls[randomIndexRight];
+        function fetchRandomImage() {
+            const randomIndex = Math.floor(Math.random() * imageUrls.length);
+            const randomImage = document.getElementById('randomImageRight');
+            randomImage.src = imageUrls[randomIndex];
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchAlerts();
-            setInterval(updateDateTime, 1000);
-            updateDateTime();
-            showRandomImages(); // Mostra imagens aleatórias na carga inicial
-            setInterval(showRandomImages, 10000); // Atualiza a imagem a cada 10 segundos
-        });
+        setInterval(updateDateTime, 1000);
+        fetchAlerts();
+        fetchRandomImage();
+        setInterval(fetchRandomImage, 5000);
     </script>
 </body>
 
