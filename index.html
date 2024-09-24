@@ -102,9 +102,9 @@
             position: relative;
             width: 100%;
             height: 100%;
-            border: 15px solid rgba(255, 20, 147, 0.7);
-            border-radius: 20px; /* Bordas mais arredondadas */
-            box-shadow: 0 0 25px rgba(255, 20, 147, 0.7); /* Sombra mais pronunciada */
+            border: 10px solid rgba(144, 238, 144, 0.7); /* Verde bem fraquinho */
+            border-radius: 15px; /* Bordas mais arredondadas */
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.5); /* Sombra mais leve */
             overflow: hidden;
         }
 
@@ -112,32 +112,6 @@
             width: 100%;
             height: 100%;
             object-fit: contain; /* Garante que a imagem se ajuste sem deformação */
-        }
-
-        .image-title {
-            position: absolute;
-            top: 10px; /* Distância do topo */
-            left: 50%; /* Centraliza horizontalmente */
-            transform: translateX(-50%); /* Corrige a centralização */
-            font-size: 4vw; /* Tamanho do texto para o título */
-            color: hotpink; /* Cor rosa choque */
-            background-color: rgba(255, 255, 255, 0.7); /* Fundo branco opaco */
-            padding: 5px 10px; /* Espaçamento interno */
-            border-radius: 10px; /* Bordas arredondadas */
-            z-index: 1; /* Garante que o título fique acima da imagem */
-        }
-
-        .family-title {
-            position: absolute;
-            bottom: 10px; /* Distância do fundo */
-            left: 50%; /* Centraliza horizontalmente */
-            transform: translateX(-50%); /* Corrige a centralização */
-            font-size: 4vw; /* Ajuste o tamanho da fonte */
-            color: hotpink; /* Cor rosa choque */
-            background-color: rgba(255, 255, 255, 0.7); /* Fundo branco opaco */
-            padding: 5px 10px; /* Espaçamento interno */
-            border-radius: 10px; /* Bordas arredondadas */
-            z-index: 1; /* Garante que o título fique acima da imagem */
         }
     </style>
 </head>
@@ -158,8 +132,6 @@
         <div class="image-container">
             <div class="image-frame">
                 <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
-                <div class="image-title">❤️ Família ❤️</div>
-                <div class="family-title">Família</div> <!-- Aqui foi ajustada a posição da palavra Família -->
             </div>
         </div>
     </div>
