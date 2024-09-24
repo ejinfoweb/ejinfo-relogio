@@ -11,15 +11,20 @@
             background-color: black;
             color: white;
             font-family: 'Roboto', sans-serif;
-            text-align: center;
             margin: 0;
             padding: 20px;
-            position: relative; /* Para permitir que os elementos absolutos se posicionem em relação a ele */
+            display: flex; /* Usa Flexbox para layout */
             height: 100vh; /* Altura total da visualização */
         }
 
-        .date {
-            margin-bottom: 20px;
+        .left-panel {
+            width: 70%; /* Largura para o painel esquerdo */
+            padding-right: 20px; /* Espaçamento entre os painéis */
+        }
+
+        .right-panel {
+            width: 20%; /* Largura para o painel direito */
+            position: relative; /* Para permitir o posicionamento absoluto dos elementos internos */
         }
 
         .current-date {
@@ -68,10 +73,10 @@
 
         .image-container {
             position: absolute;
-            top: 0; /* Coloca a imagem no topo da página */
+            top: 0; /* Coloca a imagem no topo do painel direito */
             right: 0; /* Alinha a imagem à direita */
-            width: 50%; /* Ocupa metade da largura */
-            height: 50%; /* Ocupa metade da altura da visualização */
+            width: 100%; /* Ocupa toda a largura do painel direito */
+            height: 100%; /* Ocupa toda a altura do painel direito */
             overflow: hidden; /* Para esconder qualquer parte da imagem que exceda o contêiner */
             text-align: center; /* Centraliza o texto dentro do contêiner */
         }
@@ -83,7 +88,7 @@
         }
 
         .image-title {
-            color: white;
+            color: green; /* Altera a cor do texto para verde */
             font-size: 3vw; /* Tamanho do texto para o título */
             font-weight: bold;
             position: absolute; /* Posiciona o título dentro do contêiner da imagem */
@@ -95,23 +100,25 @@
 </head>
 
 <body>
-    <div class="date">
+    <div class="left-panel">
         <div class="current-date" id="currentDate"></div>
         <div class="day" id="day"></div>
-    </div>
-    <div class="clock" id="clock"></div>
-    <div class="shift" id="shift"></div>
+        <div class="clock" id="clock"></div>
+        <div class="shift" id="shift"></div>
 
-    <div class="alerts-section">
-        <div id="alertList" class="no-alerts">Carregando alertas...</div>
+        <div class="alerts-section">
+            <div id="alertList" class="no-alerts">Carregando alertas...</div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="image-container">
+            <div class="image-title">❤️ Família da Franci: ❤️</div>
+            <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
+        </div>
     </div>
 
     <audio id="alertSound" src="https://ejinfoweb.github.io/ejinfo-relogio/alarme.wav" preload="auto"></audio>
-
-    <div class="image-container">
-        <div class="image-title">❤️ Família da Franci: ❤️</div>
-        <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
-    </div>
 
     <script>
         const alerts = [];
