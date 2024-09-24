@@ -29,6 +29,9 @@
 
         .right-panel {
             width: 45%; /* Largura para o painel direito */
+            display: flex; /* Para centralizar o conteúdo */
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center; /* Centraliza verticalmente */
             position: relative; /* Para permitir o posicionamento absoluto dos elementos internos */
         }
 
@@ -87,19 +90,19 @@
         }
 
         .image-container {
-            position: absolute;
-            top: 0; /* Coloca a imagem no topo do painel direito */
-            right: 0; /* Alinha a imagem à direita */
-            width: 100%; /* Ocupa toda a largura do painel direito */
-            height: 100%; /* Ocupa toda a altura do painel direito */
+            position: relative; /* Para permitir o posicionamento de outros elementos dentro */
+            width: 90%; /* A moldura ocupa 90% da largura do painel direito */
+            max-height: 90%; /* Define a altura máxima */
             overflow: hidden; /* Para esconder qualquer parte da imagem que exceda o contêiner */
-            text-align: center; /* Centraliza o texto dentro do contêiner */
+            display: flex; /* Para centralizar a imagem */
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center; /* Centraliza verticalmente */
         }
 
         .image-frame {
             position: relative; /* Para permitir o posicionamento de outros elementos dentro */
             width: 100%; /* A moldura ocupa toda a largura do contêiner */
-            height: 100%; /* A moldura ocupa toda a altura do contêiner */
+            height: auto; /* A moldura terá altura automática com base na largura */
             border: 10px solid rgba(255, 20, 147, 0.7); /* Cor da moldura (rosa choque) */
             border-radius: 15px; /* Bordas arredondadas */
             box-shadow: 0 0 15px rgba(255, 20, 147, 0.7); /* Sombra da moldura */
@@ -108,7 +111,7 @@
 
         img {
             width: 100%; /* A imagem vai se ajustar ao contêiner */
-            height: 100%; /* A imagem vai ocupar toda a altura do contêiner */
+            height: auto; /* A altura é automática para manter a proporção */
             object-fit: cover; /* Mantém a proporção da imagem, cobrindo o espaço do contêiner */
         }
 
@@ -128,7 +131,8 @@
         .family-title {
             position: absolute;
             top: 10px; /* Distância do topo */
-            left: 10px; /* Alinha à esquerda */
+            left: 50%; /* Centraliza horizontalmente */
+            transform: translateX(-50%); /* Corrige a centralização */
             font-size: 4vw; /* Ajuste o tamanho da fonte */
             color: hotpink; /* Cor rosa choque */
             background-color: rgba(255, 255, 255, 0.6); /* Fundo branco opaco */
@@ -210,11 +214,10 @@
         function checkAlerts(hours, minutes, seconds) {
             const alertsSection = document.getElementById('alertsSection');
             const alertList = document.getElementById('alertList');
-            alertList.innerHTML = ''; // Limpa os alertas anteriores
-
-            // Filtra os alertas com base no horário atual
             const currentTime = `${hours}:${minutes}`;
             const alertsToShow = alerts.filter(alert => alert.startsWith(currentTime));
+
+            alertList.innerHTML = ''; // Limpa a lista de alertas
 
             if (alertsToShow.length > 0) {
                 alertsSection.style.display = 'block'; // Mostra a seção de alertas
