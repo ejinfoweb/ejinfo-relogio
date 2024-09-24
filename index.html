@@ -14,6 +14,8 @@
             text-align: center;
             margin: 0;
             padding: 20px;
+            position: relative; /* Para permitir que os elementos absolutos se posicionem em relação a ele */
+            height: 100vh; /* Altura total da visualização */
         }
 
         .date {
@@ -66,22 +68,28 @@
 
         .image-container {
             position: absolute;
-            top: 20px;
-            width: 200px; /* Ajuste o tamanho conforme necessário */
-            height: 200px; /* Ajuste o tamanho conforme necessário */
-        }
-
-        .image-left {
-            left: 20px;
-        }
-
-        .image-right {
-            right: 20px;
+            top: 0; /* Coloca a imagem no topo da página */
+            right: 0; /* Alinha a imagem à direita */
+            width: 50%; /* Ocupa metade da largura */
+            height: 50%; /* Ocupa metade da altura da visualização */
+            overflow: hidden; /* Para esconder qualquer parte da imagem que exceda o contêiner */
+            text-align: center; /* Centraliza o texto dentro do contêiner */
         }
 
         img {
             width: 100%; /* A imagem vai se ajustar ao contêiner */
-            height: auto;
+            height: 100%; /* A imagem vai ocupar toda a altura do contêiner */
+            object-fit: cover; /* Mantém a proporção da imagem, cobrindo o espaço do contêiner */
+        }
+
+        .image-title {
+            color: white;
+            font-size: 3vw; /* Tamanho do texto para o título */
+            font-weight: bold;
+            position: absolute; /* Posiciona o título dentro do contêiner da imagem */
+            top: 10px; /* Distância do topo */
+            right: 10px; /* Distância do lado direito */
+            z-index: 1; /* Garante que o título fique acima da imagem */
         }
     </style>
 </head>
@@ -100,10 +108,8 @@
 
     <audio id="alertSound" src="https://ejinfoweb.github.io/ejinfo-relogio/alarme.wav" preload="auto"></audio>
 
-    <div class="image-container image-left">
-        <img id="randomImageLeft" src="" alt="Imagem Aleatória Esquerda">
-    </div>
-    <div class="image-container image-right">
+    <div class="image-container">
+        <div class="image-title">❤️ Família da Franci: ❤️</div>
         <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
     </div>
 
@@ -207,10 +213,7 @@
         }
 
         function showRandomImages() {
-            const randomIndexLeft = Math.floor(Math.random() * imageUrls.length);
             const randomIndexRight = Math.floor(Math.random() * imageUrls.length);
-
-            document.getElementById('randomImageLeft').src = imageUrls[randomIndexLeft];
             document.getElementById('randomImageRight').src = imageUrls[randomIndexRight];
         }
 
@@ -219,7 +222,7 @@
             setInterval(updateDateTime, 1000);
             updateDateTime();
             showRandomImages(); // Mostra imagens aleatórias na carga inicial
-            setInterval(showRandomImages, 10000); // Atualiza as imagens a cada 10 segundos
+            setInterval(showRandomImages, 10000); // Atualiza a imagem a cada 10 segundos
         });
     </script>
 </body>
