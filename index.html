@@ -63,6 +63,26 @@
             font-size: 5vw;
             color: white;
         }
+
+        .image-container {
+            position: absolute;
+            top: 20px;
+            width: 50px; /* Ajuste o tamanho conforme necessário */
+            height: 50px; /* Ajuste o tamanho conforme necessário */
+        }
+
+        .image-left {
+            left: 20px;
+        }
+
+        .image-right {
+            right: 20px;
+        }
+
+        img {
+            width: 100%; /* A imagem vai se ajustar ao contêiner */
+            height: auto;
+        }
     </style>
 </head>
 
@@ -80,9 +100,22 @@
 
     <audio id="alertSound" src="https://ejinfoweb.github.io/ejinfo-relogio/alarme.wav" preload="auto"></audio>
 
+    <div class="image-container image-left">
+        <img id="randomImageLeft" src="" alt="Imagem Aleatória Esquerda">
+    </div>
+    <div class="image-container image-right">
+        <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
+    </div>
+
     <script>
         const alerts = [];
         const alertFileUrl = 'https://ejinfoweb.github.io/ejinfo-relogio/alertas.txt';
+        const imageUrls = [
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem1.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem2.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem3.jpg',
+            // Adicione mais URLs de imagens conforme necessário
+        ];
 
         function updateDateTime() {
             const now = new Date();
@@ -150,14 +183,8 @@
 
         function playAlarm() {
             const alertSound = document.getElementById('alertSound');
-            alertSound.currentTime = 0; // Reinicia o áudio
+            alertSound.currentTime = 0;
             alertSound.play();
-            
-            // Toca o alarme por 20 segundos
-            setTimeout(() => {
-                alertSound.pause(); // Para o áudio após 20 segundos
-                alertSound.currentTime = 0; // Reinicia o áudio
-            }, 20000);
         }
 
         function fetchAlerts() {
@@ -169,7 +196,7 @@
                     lines.forEach(line => {
                         const [time, message] = line.split(',');
                         if (time && message) {
-                            alerts.push({ hour: time.trim(), message: message.trim() });
+                            alerts.push({ hour: time, message: message });
                         }
                     });
                 })
@@ -179,18 +206,20 @@
                 });
         }
 
+        function showRandomImages() {
+            const randomIndexLeft = Math.floor(Math.random() * imageUrls.length);
+            const randomIndexRight = Math.floor(Math.random() * imageUrls.length);
+
+            document.getElementById('randomImageLeft').src = imageUrls[randomIndexLeft];
+            document.getElementById('randomImageRight').src = imageUrls[randomIndexRight];
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             fetchAlerts();
             setInterval(updateDateTime, 1000);
             updateDateTime();
-
-            // Limpa a mensagem de alerta após 1 minuto
-            setInterval(() => {
-                const alertList = document.getElementById('alertList');
-                if (alertList.innerHTML !== 'Carregando alertas...' && alertList.innerHTML !== 'Franci, sua família te ama! ❤️') {
-                    alertList.innerHTML = 'Franci, sua família te ama! ❤️';
-                }
-            }, 60000);
+            showRandomImages(); // Mostra imagens aleatórias na carga inicial
+            setInterval(showRandomImages, 10000); // Atualiza as imagens a cada 10 segundos
         });
     </script>
 </body>
