@@ -19,7 +19,7 @@
         }
 
         .left-panel {
-            width: 70%; /* Largura para o painel esquerdo */
+            width: 55%; /* Largura para o painel esquerdo */
             padding-right: 20px; /* Espaçamento entre os painéis */
             display: flex;
             flex-direction: column;
@@ -28,7 +28,7 @@
         }
 
         .right-panel {
-            width: 30%; /* Largura para o painel direito */
+            width: 45%; /* Largura para o painel direito */
             position: relative; /* Para permitir o posicionamento absoluto dos elementos internos */
         }
 
@@ -67,8 +67,7 @@
             border-radius: 10px;
             text-align: center;
             color: white;
-            max-height: 50%; /* Altura máxima para a seção de alertas */
-            overflow-y: auto; /* Permite rolagem se o conteúdo exceder */
+            display: none; /* Inicialmente oculta a seção de alertas */
         }
 
         .alert-item {
@@ -147,8 +146,8 @@
         <div class="clock" id="clock"></div>
         <div class="shift" id="shift"></div>
 
-        <div class="alerts-section">
-            <div id="alertList" class="no-alerts">Carregando alertas...</div>
+        <div class="alerts-section" id="alertsSection">
+            <div id="alertList" class="no-alerts">Sem alertas no momento.</div>
         </div>
     </div>
 
@@ -208,18 +207,26 @@
             checkAlerts(hours, minutes, seconds);
         }
 
-        function renderAlerts(alertsToShow) {
+        function checkAlerts(hours, minutes, seconds) {
+            const alertsSection = document.getElementById('alertsSection');
             const alertList = document.getElementById('alertList');
-            alertList.innerHTML = '';
+            alertList.innerHTML = ''; // Limpa os alertas anteriores
+
+            // Filtra os alertas com base no horário atual
+            const currentTime = `${hours}:${minutes}`;
+            const alertsToShow = alerts.filter(alert => alert.startsWith(currentTime));
+
             if (alertsToShow.length > 0) {
+                alertsSection.style.display = 'block'; // Mostra a seção de alertas
                 alertsToShow.forEach(alert => {
                     const alertItem = document.createElement('div');
                     alertItem.classList.add('alert-item');
-                    alertItem.textContent = alert;
+                    alertItem.textContent = alert.split(',')[1]; // Mostra apenas a parte do alerta
                     alertList.appendChild(alertItem);
+                    document.getElementById('alertSound').play(); // Toca o som do alerta
                 });
             } else {
-                alertList.textContent = 'Sem alertas no momento.';
+                alertsSection.style.display = 'none'; // Esconde a seção se não houver alertas
             }
         }
 
@@ -227,7 +234,6 @@
             const response = await fetch(alertFileUrl);
             const data = await response.text();
             alerts.push(...data.split('\n').filter(line => line.trim() !== ''));
-            renderAlerts(alerts);
         }
 
         // Função para definir uma imagem aleatória
