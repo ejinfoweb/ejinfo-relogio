@@ -94,6 +94,16 @@
             text-align: center; /* Centraliza o texto dentro do contêiner */
         }
 
+        .image-frame {
+            position: relative; /* Para permitir o posicionamento de outros elementos dentro */
+            width: 100%; /* A moldura ocupa toda a largura do contêiner */
+            height: 100%; /* A moldura ocupa toda a altura do contêiner */
+            border: 10px solid rgba(255, 20, 147, 0.7); /* Cor da moldura (rosa choque) */
+            border-radius: 15px; /* Bordas arredondadas */
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.7); /* Sombra da moldura */
+            overflow: hidden; /* Para esconder qualquer parte da imagem que exceda a moldura */
+        }
+
         img {
             width: 100%; /* A imagem vai se ajustar ao contêiner */
             height: 100%; /* A imagem vai ocupar toda a altura do contêiner */
@@ -141,8 +151,10 @@
 
     <div class="right-panel">
         <div class="image-container">
-            <div class="image-title family-title">❤️ Família ❤️</div>
-            <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
+            <div class="image-frame"> <!-- Moldura adicionada aqui -->
+                <div class="image-title family-title">❤️ Família ❤️</div>
+                <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
+            </div>
         </div>
     </div>
 
@@ -210,24 +222,12 @@
 
         async function fetchAlerts() {
             const response = await fetch(alertFileUrl);
-            const text = await response.text();
-            const lines = text.split('\n');
-            for (const line of lines) {
-                const [time, alert] = line.split(',');
-                if (time && alert) {
-                    alerts.push({ time: time.trim(), alert: alert.trim() });
-                }
-            }
-            console.log('Alertas carregados:', alerts);
-            updateAlerts();
+            const data = await response.text();
+            alerts.push(...data.split('\n').filter(line => line.trim() !== ''));
+            renderAlerts(alerts);
         }
 
-        function checkAlerts(hours, minutes, seconds) {
-            const currentTime = `${hours}:${minutes}`;
-            const alertsToShow = alerts.filter(alert => alert.time === currentTime).map(alert => alert.alert);
-            renderAlerts(alertsToShow);
-        }
-
+        // Função para definir uma imagem aleatória
         function setRandomImage() {
             const randomIndex = Math.floor(Math.random() * imageUrls.length);
             const randomImage = document.getElementById('randomImageRight');
