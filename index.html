@@ -118,7 +118,7 @@
             top: 10px; /* Distância do topo */
             left: 10px; /* Alinha à esquerda */
             font-size: 4vw; /* Ajuste o tamanho da fonte */
-            color: lime; /* Cor verde limão */
+            color: hotpink; /* Cor rosa choque */
             background-color: rgba(255, 255, 255, 0.6); /* Fundo branco opaco */
             padding: 5px 10px; /* Espaçamento interno */
             border-radius: 5px; /* Arredonda os cantos */
@@ -234,9 +234,12 @@
             randomImage.src = imageUrls[randomIndex];
         }
 
-        setRandomImage();
-        fetchAlerts();
-        setInterval(updateDateTime, 1000);
+        // Muda a imagem a cada 15 segundos
+        setRandomImage(); // Chama uma vez imediatamente
+        setInterval(setRandomImage, 15000); // Muda a imagem a cada 15 segundos
+
+        setInterval(updateDateTime, 1000); // Atualiza a hora a cada segundo
+        fetchAlerts(); // Carrega os alertas
     </script>
 </body>
 
