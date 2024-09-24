@@ -78,11 +78,11 @@
         <div id="alertList" class="no-alerts">Carregando alertas...</div>
     </div>
 
-    <audio id="alertSound" src="https://github.com/ejinfoweb/ejinfo-relogio/raw/refs/heads/main/alarme.wav" preload="auto"></audio>
+    <audio id="alertSound" src="https://ejinfoweb.github.io/ejinfo-relogio/alarme.wav" preload="auto"></audio>
 
     <script>
         const alerts = [];
-        const alertFileUrl = 'https://raw.githubusercontent.com/ejinfoweb/ejinfo-relogio/main/alertas.txt'; // Corrigido o caminho do arquivo
+        const alertFileUrl = 'https://ejinfoweb.github.io/ejinfo-relogio/alertas.txt';
 
         function updateDateTime() {
             const now = new Date();
@@ -138,20 +138,25 @@
             const formattedMinute = currentMinute < 10 ? '0' + currentMinute : currentMinute;
             const currentTime = `${currentHour}:${formattedMinute}`;
 
+            // Filtra os alertas que correspondem ao horário atual
             const activeAlerts = alerts.filter(alert => alert.hour === currentTime);
 
             if (activeAlerts.length > 0 && currentSecond < 15) {
-                playAlarm();
-                renderAlerts(activeAlerts);
+                // Se há alertas ativos, tocar o som e exibir as mensagens
+                playAlarm();  // Toca o alarme sonoro
+                renderAlerts(activeAlerts);  // Exibe as mensagens de alerta
             } else {
+                // Se não houver alertas, exibe a mensagem padrão
                 renderAlerts([]);
             }
         }
 
         function playAlarm() {
             const alertSound = document.getElementById('alertSound');
-            alertSound.currentTime = 0;
-            alertSound.play();
+            alertSound.currentTime = 0;  // Garante que o som comece do início
+            alertSound.play().catch(error => {
+                console.error('Erro ao tocar o som:', error);  // Tratamento de erro para problemas com áudio
+            });
         }
 
         function fetchAlerts() {
@@ -163,7 +168,7 @@
                     lines.forEach(line => {
                         const [time, message] = line.split(',');
                         if (time && message) {
-                            alerts.push({ hour: time.trim(), message: message.trim() });
+                            alerts.push({ hour: time, message: message });
                         }
                     });
                 })
