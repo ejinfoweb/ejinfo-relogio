@@ -11,14 +11,19 @@
             background-color: black;
             color: white;
             font-family: 'Roboto', sans-serif;
-            text-align: center;
             margin: 0;
             display: flex;
+            height: 100vh; /* Altura da tela */
+            overflow: hidden; /* Remove barras de rolagem */
         }
 
         .left-side {
             width: 55%;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centraliza verticalmente */
+            align-items: center; /* Centraliza horizontalmente */
         }
 
         .right-side {
@@ -26,30 +31,37 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+        }
+
+        .date {
+            font-size: 4vw; /* Tamanho responsivo */
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .day {
+            font-size: 4vw; /* Tamanho responsivo */
+            color: yellow;
+            margin-bottom: 10px;
         }
 
         .clock {
-            font-size: 10vw;
+            font-size: 10vw; /* Tamanho responsivo */
             color: white;
             letter-spacing: 5px;
             text-align: center;
         }
 
         .shift {
-            font-size: 5vw;
-            color: #32CD32;
+            font-size: 5vw; /* Tamanho responsivo */
+            color: #32CD32; /* Verde limão */
             text-align: center;
         }
 
-        .date {
-            font-size: 4vw;
-            color: white;
-            margin-bottom: 10px;
-        }
-
         .photo-container {
-            width: 100%;
-            height: 100%; /* Mantém a altura do quadro */
+            width: 90%; /* Mantém a largura da moldura */
+            height: 70%; /* Altura fixa da moldura */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -60,15 +72,16 @@
         }
 
         .photo {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%; /* Adapta a largura da imagem à moldura */
+            height: 100%; /* Adapta a altura da imagem à moldura */
             object-fit: cover; /* Para manter a proporção da imagem */
             border-radius: 15px;
         }
 
         .alerts-section {
-            margin-top: 40px;
+            margin-top: 20px;
             color: white;
+            width: 100%; /* Para evitar que a seção de alertas ultrapasse a largura */
         }
 
         .alert-item {
@@ -76,10 +89,11 @@
             color: yellow;
             padding: 15px;
             border-radius: 10px;
-            font-size: 4vw;
+            font-size: 4vw; /* Tamanho responsivo */
             font-weight: bold;
             text-transform: uppercase;
             margin-top: 10px;
+            text-align: center; /* Centraliza o texto do alerta */
         }
     </style>
 </head>
@@ -87,6 +101,7 @@
 <body>
     <div class="left-side">
         <div class="date" id="date"></div>
+        <div class="day" id="day"></div>
         <div class="clock" id="clock"></div>
         <div class="shift" id="shift"></div>
         <div class="alerts-section" id="alertList"></div>
@@ -132,6 +147,9 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const dateString = now.toLocaleDateString('pt-BR', options);
             document.getElementById('date').innerHTML = dateString;
+
+            const dayString = now.toLocaleDateString('pt-BR', { weekday: 'long' });
+            document.getElementById('day').innerHTML = dayString.charAt(0).toUpperCase() + dayString.slice(1); // Primeira letra maiúscula
 
             let hours = now.getHours();
             let minutes = now.getMinutes();
@@ -189,37 +207,30 @@
             alertSound.play();
         }
 
-        function fetchAlerts() {
-            fetch(alertFileUrl)
-                .then(response => response.text())
-                .then(data => {
-                    const lines = data.split('\n');
-                    alerts.length = 0;
-                    lines.forEach(line => {
-                        const [time, message] = line.split(',');
-                        if (time && message) {
-                            alerts.push({ hour: time, message: message });
-                        }
-                    });
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar alertas:', error);
-                });
+        async function loadAlerts() {
+            const response = await fetch(alertFileUrl);
+            const text = await response.text();
+            const lines = text.split('\n');
+
+            lines.forEach(line => {
+                const [time, message] = line.split(',');
+                alerts.push({ hour: time.trim(), message: message.trim() });
+            });
         }
 
-        function showRandomPhoto() {
+        function setRandomPhoto() {
             const randomIndex = Math.floor(Math.random() * photoUrls.length);
-            const randomPhoto = document.getElementById('randomPhoto');
-            randomPhoto.src = photoUrls[randomIndex];
+            document.getElementById('randomPhoto').src = photoUrls[randomIndex];
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchAlerts();
-            setInterval(updateDateTime, 1000);
+        async function init() {
+            await loadAlerts();
+            setRandomPhoto();
             updateDateTime();
-            showRandomPhoto(); // Mostrar uma foto aleatória no carregamento
-            setInterval(showRandomPhoto, 15000); // Trocar a foto a cada 15 segundos
-        });
+            setInterval(updateDateTime, 1000);
+        }
+
+        init();
     </script>
 </body>
 
