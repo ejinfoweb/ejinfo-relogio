@@ -11,132 +11,87 @@
             background-color: black;
             color: white;
             font-family: 'Roboto', sans-serif;
+            text-align: center;
             margin: 0;
-            padding: 20px;
             display: flex;
-            height: 100vh;
-            overflow: hidden;
         }
 
-        .left-panel {
+        .left-side {
             width: 55%;
-            padding-right: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding: 20px;
         }
 
-        .right-panel {
+        .right-side {
             width: 45%;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-        }
-
-        .current-date,
-        .day,
-        .clock,
-        .shift {
-            text-align: center;
-            margin: 0;
-        }
-
-        .current-date {
-            color: white;
-            font-size: 7vw;
-        }
-
-        .day {
-            color: yellow;
-            font-size: 7vw;
         }
 
         .clock {
-            font-size: 12vw;
+            font-size: 10vw;
             color: white;
             letter-spacing: 5px;
+            text-align: center;
         }
 
         .shift {
-            font-size: 8vw;
+            font-size: 5vw;
             color: #32CD32;
+            text-align: center;
         }
 
-        .shift.madrugada {
-            font-size: 6vw; /* Reduz a fonte para Madrugada */
+        .photo-container {
+            width: 100%;
+            height: 90%; /* Aumente para ajustar a altura do quadro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 5px solid rgba(0, 255, 0, 0.2); /* Verde bem fraquinho */
+            overflow: hidden;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Para manter a proporção da imagem */
+            border-radius: 15px;
         }
 
         .alerts-section {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
+            margin-top: 40px;
             color: white;
-            display: none;
         }
 
         .alert-item {
             background-color: red;
             color: yellow;
-            padding: 10px;
+            padding: 15px;
             border-radius: 10px;
-            font-size: 6vw;
+            font-size: 4vw;
             font-weight: bold;
             text-transform: uppercase;
-            margin-bottom: 10px;
+            margin-top: 10px;
         }
 
         .no-alerts {
-            font-size: 5vw;
+            font-size: 4vw;
             color: white;
-        }
-
-        .image-container {
-            position: relative;
-            width: 90%;
-            height: 80%; /* Aumentado para dar mais espaço vertical */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .image-frame {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            border: 10px solid rgba(144, 238, 144, 0.7); /* Verde bem fraquinho */
-            border-radius: 15px; /* Bordas mais arredondadas */
-            box-shadow: 0 0 15px rgba(144, 238, 144, 0.5); /* Sombra mais leve */
-            overflow: hidden;
-        }
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Garante que a imagem se ajuste sem deformação */
         }
     </style>
 </head>
 
 <body>
-    <div class="left-panel">
-        <div class="current-date" id="currentDate"></div>
-        <div class="day" id="day"></div>
+    <div class="left-side">
         <div class="clock" id="clock"></div>
         <div class="shift" id="shift"></div>
-
-        <div class="alerts-section" id="alertsSection">
-            <div id="alertList" class="no-alerts">Sem alertas no momento.</div>
-        </div>
+        <div class="alerts-section" id="alertList" class="no-alerts">Carregando alertas...</div>
     </div>
-
-    <div class="right-panel">
-        <div class="image-container">
-            <div class="image-frame">
-                <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
-            </div>
+    <div class="right-side">
+        <div class="photo-container">
+            <img id="randomPhoto" class="photo" src="" alt="Foto da Família">
         </div>
     </div>
 
@@ -145,22 +100,33 @@
     <script>
         const alerts = [];
         const alertFileUrl = 'https://ejinfoweb.github.io/ejinfo-relogio/alertas.txt';
-        const imageUrls = [
+        const photoUrls = [
             'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem1.jpg',
             'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem2.jpg',
             'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem3.jpg',
-            // Adicione mais URLs de imagens conforme necessário
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem4.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem5.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem6.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem7.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem8.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem9.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem10.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem11.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem12.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem13.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem14.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem15.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem16.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem17.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem18.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem19.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem20.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem21.jpg',
+            'https://ejinfoweb.github.io/ejinfo-relogio/imagens/imagem22.jpg'
         ];
 
         function updateDateTime() {
             const now = new Date();
-            const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-            const day = days[now.getDay()];
-            const date = now.toLocaleDateString('pt-BR');
-
-            document.getElementById('currentDate').innerHTML = date;
-            document.getElementById('day').innerHTML = day;
-
             let hours = now.getHours();
             let minutes = now.getMinutes();
             let seconds = now.getSeconds();
@@ -168,24 +134,17 @@
             minutes = minutes < 10 ? '0' + minutes : minutes;
             seconds = seconds < 10 ? '0' + seconds : seconds;
             const timeString = `${hours}:${minutes}:${seconds}`;
-
             document.getElementById('clock').innerHTML = timeString;
 
             let shift = '';
             if (hours >= 0 && hours < 6) {
                 shift = '😴 Madrugada 😴';
-                document.getElementById('shift').classList.add('madrugada'); // Adiciona classe para ajustar a fonte
-            } else {
+            } else if (hours >= 6 && hours < 12) {
                 shift = '🌅 Manhã 🌅';
-                document.getElementById('shift').classList.remove('madrugada'); // Remove classe para outros turnos
-            }
-
-            if (hours >= 12 && hours < 18) {
+            } else if (hours >= 12 && hours < 18) {
                 shift = '☀️ Tarde ☀️';
-                document.getElementById('shift').classList.remove('madrugada');
-            } else if (hours >= 18) {
+            } else {
                 shift = '🌙 Noite 🌙';
-                document.getElementById('shift').classList.remove('madrugada');
             }
 
             document.getElementById('shift').innerHTML = shift;
@@ -193,44 +152,73 @@
             checkAlerts(hours, minutes, seconds);
         }
 
-        function checkAlerts(hours, minutes, seconds) {
-            const alertsSection = document.getElementById('alertsSection');
+        function renderAlerts(alertsToShow) {
             const alertList = document.getElementById('alertList');
-            const currentTime = `${hours}:${minutes}`;
-            const alertsToShow = alerts.filter(alert => alert.startsWith(currentTime));
-
             alertList.innerHTML = '';
-
-            if (alertsToShow.length > 0) {
-                alertsSection.style.display = 'block';
-                alertsToShow.forEach(alert => {
-                    const alertItem = document.createElement('div');
-                    alertItem.classList.add('alert-item');
-                    alertItem.textContent = alert.split(',')[1];
-                    alertList.appendChild(alertItem);
-                    document.getElementById('alertSound').play();
-                });
+            if (alertsToShow.length === 0) {
+                alertList.innerHTML = 'Sem alertas.';
             } else {
-                alertsSection.style.display = 'none';
+                alertsToShow.forEach((alert) => {
+                    const alertItem = document.createElement('div');
+                    alertItem.className = 'alert-item';
+                    alertItem.innerHTML = `<span>${alert.message}</span>`;
+                    alertList.appendChild(alertItem);
+                });
             }
         }
 
-        async function fetchAlerts() {
-            const response = await fetch(alertFileUrl);
-            const data = await response.text();
-            alerts.push(...data.split('\n').filter(line => line.trim() !== ''));
+        function checkAlerts(currentHour, currentMinute, currentSecond) {
+            const formattedMinute = currentMinute < 10 ? '0' + currentMinute : currentMinute;
+            const currentTime = `${currentHour}:${formattedMinute}`;
+
+            const activeAlerts = alerts.filter(alert => alert.hour === currentTime);
+
+            if (activeAlerts.length > 0 && currentSecond < 15) {
+                playAlarm();
+                renderAlerts(activeAlerts);
+            } else {
+                renderAlerts([]);
+            }
         }
 
-        function setRandomImage() {
-            const randomIndex = Math.floor(Math.random() * imageUrls.length);
-            const randomImage = document.getElementById('randomImageRight');
-            randomImage.src = imageUrls[randomIndex];
+        function playAlarm() {
+            const alertSound = document.getElementById('alertSound');
+            alertSound.currentTime = 0;
+            alertSound.play();
         }
 
-        setRandomImage();
-        setInterval(setRandomImage, 15000);
-        setInterval(updateDateTime, 1000);
-        fetchAlerts();
+        function fetchAlerts() {
+            fetch(alertFileUrl)
+                .then(response => response.text())
+                .then(data => {
+                    const lines = data.split('\n');
+                    alerts.length = 0;
+                    lines.forEach(line => {
+                        const [time, message] = line.split(',');
+                        if (time && message) {
+                            alerts.push({ hour: time, message: message });
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar alertas:', error);
+                    document.getElementById('alertList').innerText = 'Erro ao carregar alertas.';
+                });
+        }
+
+        function showRandomPhoto() {
+            const randomIndex = Math.floor(Math.random() * photoUrls.length);
+            const randomPhoto = document.getElementById('randomPhoto');
+            randomPhoto.src = photoUrls[randomIndex];
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAlerts();
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
+            showRandomPhoto(); // Mostrar uma foto aleatória no carregamento
+            setInterval(showRandomPhoto, 15000); // Trocar a foto a cada 15 segundos
+        });
     </script>
 </body>
 
