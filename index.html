@@ -130,6 +130,11 @@
                     alertItem.className = 'alert-item';
                     alertItem.innerHTML = `<span>${alert.message}</span>`;
                     alertList.appendChild(alertItem);
+
+                    // Remove a mensagem após 1 minuto
+                    setTimeout(() => {
+                        alertItem.remove();
+                    }, 60000); // 60 segundos
                 });
             }
         }
@@ -141,12 +146,10 @@
             // Filtra os alertas que correspondem ao horário atual
             const activeAlerts = alerts.filter(alert => alert.hour === currentTime);
 
-            if (activeAlerts.length > 0 && currentSecond < 15) {
-                // Se há alertas ativos, tocar o som e exibir as mensagens
+            if (activeAlerts.length > 0 && currentSecond < 20) {  // Toca o alarme por 20 segundos
                 playAlarm();  // Toca o alarme sonoro
                 renderAlerts(activeAlerts);  // Exibe as mensagens de alerta
             } else {
-                // Se não houver alertas, exibe a mensagem padrão
                 renderAlerts([]);
             }
         }
@@ -157,6 +160,11 @@
             alertSound.play().catch(error => {
                 console.error('Erro ao tocar o som:', error);  // Tratamento de erro para problemas com áudio
             });
+
+            // Para o alarme após 20 segundos
+            setTimeout(() => {
+                alertSound.pause();
+            }, 20000); // 20 segundos
         }
 
         function fetchAlerts() {
