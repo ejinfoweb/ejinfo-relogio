@@ -119,6 +119,20 @@
             color: white;
             text-align: center; /* Centraliza o texto */
         }
+
+        .family-title {
+            position: absolute;
+            top: 10px; /* Distância do topo */
+            left: 0;
+            right: 0;
+            text-align: center; /* Centraliza o texto */
+            font-size: 3vw; /* Ajuste o tamanho da fonte */
+            color: lime; /* Cor verde limão */
+            background-color: rgba(255, 255, 255, 0.6); /* Fundo branco opaco */
+            padding: 5px 10px; /* Espaçamento interno */
+            border-radius: 5px; /* Arredonda os cantos */
+            z-index: 1; /* Garante que o título fique acima da imagem */
+        }
     </style>
 </head>
 
@@ -138,7 +152,7 @@
 
     <div class="right-panel">
         <div class="image-container">
-            <div class="image-title">❤️ Família ❤️</div>
+            <div class="image-title family-title">❤️ Família ❤️</div>
             <img id="randomImageRight" src="" alt="Imagem Aleatória Direita">
         </div>
     </div>
@@ -205,24 +219,19 @@
             }
         }
 
-        function checkAlerts(currentHour, currentMinute, currentSecond) {
-            const formattedMinute = currentMinute < 10 ? '0' + currentMinute : currentMinute;
-            const currentTime = `${currentHour}:${formattedMinute}`;
+        function checkAlerts(hours, minutes, seconds) {
+            const currentTime = `${hours}:${minutes}`;
+            const alertsToShow = alerts.filter(alert => alert.hour === currentTime);
+            renderAlerts(alertsToShow);
+            if (alertsToShow.length > 0) {
+                const alertSound = document.getElementById('alertSound');
+                alertSound.currentTime = 0; // Reinicia o som
+                alertSound.play();
 
-            const activeAlerts = alerts.filter(alert => alert.hour === currentTime);
-
-            if (activeAlerts.length > 0 && currentSecond < 15) {
-                playAlarm();
-                renderAlerts(activeAlerts);
-            } else {
-                renderAlerts([]);
+                setTimeout(() => {
+                    alertSound.pause(); // Para o som após 20 segundos
+                }, 20000);
             }
-        }
-
-        function playAlarm() {
-            const alertSound = document.getElementById('alertSound');
-            alertSound.currentTime = 0;
-            alertSound.play();
         }
 
         function fetchAlerts() {
