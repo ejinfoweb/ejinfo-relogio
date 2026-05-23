@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relógio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a1628;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow', sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(20,60,130,0.4) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(10,30,80,0.6) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.8; }
+  }
+
+  .container {
+    text-align: center;
+    z-index: 1;
+    padding: 2rem;
+  }
+
+  .header {
+    margin-bottom: 1.5rem;
+  }
+
+  .dia-semana {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    color: rgba(180, 210, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    margin-bottom: 0.3rem;
+  }
+
+  .data-completa {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: rgba(140, 180, 255, 0.6);
+    letter-spacing: 0.15em;
+  }
+
+  .hora {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 22vw, 14rem);
+    color: #FFD700;
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    text-shadow:
+      0 0 40px rgba(255, 215, 0, 0.3),
+      0 0 80px rgba(255, 215, 0, 0.1);
+    animation: pulse-clock 1s ease-in-out infinite;
+    position: relative;
+  }
+
+  @keyframes pulse-clock {
+    0%, 100% { text-shadow: 0 0 40px rgba(255,215,0,0.3), 0 0 80px rgba(255,215,0,0.1); }
+    50% { text-shadow: 0 0 60px rgba(255,215,0,0.5), 0 0 100px rgba(255,215,0,0.2); }
+  }
+
+  .hora .colon {
+    animation: blink 1s step-end infinite;
+    display: inline-block;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .periodo {
+    margin-top: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+  }
+
+  .periodo-icon {
+    font-size: 2.2rem;
+  }
+
+  .periodo-texto {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    color: rgba(180, 210, 255, 0.65);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  .water-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 6px 16px 6px 10px;
+    z-index: 1;
+  }
+
+  .water-bar-label {
+    font-size: 11px;
+    color: rgba(140,180,255,0.5);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .water-bar-next {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(180, 210, 255, 0.7);
+    letter-spacing: 0.05em;
+  }
+
+  .water-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4a9eff;
+    opacity: 0.5;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 10, 30, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .alert-box {
+    background: linear-gradient(135deg, #0d2b5e 0%, #0a1628 100%);
+    border: 1px solid rgba(74, 158, 255, 0.4);
+    border-radius: 20px;
+    padding: 3rem 3.5rem;
+    text-align: center;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: 0 0 60px rgba(74, 158, 255, 0.15), 0 0 120px rgba(74, 158, 255, 0.05);
+    animation: alert-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes alert-in {
+    from { transform: scale(0.8) translateY(20px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  .alert-water-icon {
+    font-size: 4rem;
+    margin-bottom: 0.8rem;
+    animation: water-bounce 1s ease-in-out infinite;
+  }
+
+  @keyframes water-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .alert-atencao {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: rgba(74, 158, 255, 0.7);
+    margin-bottom: 0.5rem;
+  }
+
+  .alert-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.2rem;
+    color: #FFD700;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 0.7rem;
+    text-shadow: 0 0 30px rgba(255,215,0,0.3);
+  }
+
+  .alert-sub {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    color: rgba(180, 210, 255, 0.6);
+    margin-bottom: 2.2rem;
+    line-height: 1.5;
+  }
+
+  .alert-waves {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 2rem;
+  }
+
+  .wave {
+    width: 6px;
+    height: 24px;
+    background: rgba(74, 158, 255, 0.4);
+    border-radius: 3px;
+    animation: wave-anim 1s ease-in-out infinite;
+  }
+
+  .wave:nth-child(2) { animation-delay: 0.15s; }
+  .wave:nth-child(3) { animation-delay: 0.3s; }
+  .wave:nth-child(4) { animation-delay: 0.45s; }
+  .wave:nth-child(5) { animation-delay: 0.6s; }
+
+  @keyframes wave-anim {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
+    50% { transform: scaleY(1); opacity: 1; }
+  }
+
+  .btn-ok {
+    background: transparent;
+    border: 3px solid #FFD700;
+    color: #FFD700;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 1rem 5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    text-shadow: 0 0 20px rgba(255,215,0,0.3);
+  }
+
+  .btn-ok::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 215, 0, 0);
+    transition: background 0.2s ease;
+    border-radius: 50px;
+  }
+
+  .btn-ok:hover {
+    color: #0a1628;
+    border-color: #FFD700;
+    transform: scale(1.03);
+  }
+
+  .btn-ok:hover::before {
+    background: #FFD700;
+  }
+
+  .btn-ok:active { transform: scale(0.97); }
+
+  .btn-ok span { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="dia-semana" id="diaSemana"></div>
+    <div class="data-completa" id="dataCompleta"></div>
+  </div>
+
+  <div class="hora" id="hora">
+    <span id="hh">00</span><span class="colon">:</span><span id="mm">00</span><span class="colon">:</span><span id="ss">00</span>
+  </div>
+
+  <div class="periodo">
+    <span class="periodo-icon" id="periodoIcon">🌤️</span>
+    <span class="periodo-texto" id="periodoTexto">Manhã</span>
+  </div>
+</div>
+
+<div class="water-bar">
+  <div class="water-dot"></div>
+  <span class="water-bar-label">Próxima água:</span>
+  <span class="water-bar-next" id="proxAgua">--:--</span>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="alert-box">
+    <div class="alert-water-icon">💧</div>
+    <div class="alert-atencao">⚠ Atenção</div>
+    <div class="alert-titulo">Beber Água!</div>
+    <div class="alert-sub">Está na hora de se hidratar.<br>Beba pelo menos um copo d'água agora.</div>
+    <div class="alert-waves">
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
+      <div class="wave"></div>
+    </div>
+    <button class="btn-ok" onclick="fecharAlerta()">
+      <span>✓ &nbsp; OK</span>
+    </button>
+    <div style="margin-top:1.5rem;">
+      <div style="font-size:0.7rem;color:rgba(140,180,255,0.4);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px;">Fecha automaticamente em 10 min</div>
+      <div style="background:rgba(255,255,255,0.07);border-radius:50px;height:3px;overflow:hidden;">
+        <div id="progresso" style="height:100%;background:rgba(74,158,255,0.5);border-radius:50px;width:100%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+  const diasSemana = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+
+  const HORA_INICIO = 10;
+  const HORA_FIM = 21;
+  const TIMEOUT_ALERTA_MS = 10 * 60 * 1000;
+
+  let alertaAberto = false;
+  let ultimoAlerta = null;
+  let timerFechamento = null;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function getPeriodo(h) {
+    if (h >= 5 && h < 12)  return { texto: 'Manhã',    icon: '🌤️' };
+    if (h >= 12 && h < 18) return { texto: 'Tarde',    icon: '☀️' };
+    if (h >= 18 && h < 24) return { texto: 'Noite',    icon: '🌙' };
+    return                         { texto: 'Madrugada', icon: '🌌' };
+  }
+
+  function horarioAtivo(h) {
+    return h >= HORA_INICIO && h < HORA_FIM;
+  }
+
+  function proximoAlerta(now) {
+    const h = now.getHours(), m = now.getMinutes();
+    for (let i = HORA_INICIO; i < HORA_FIM; i += 2) {
+      if (i > h || (i === h && 15 > m)) {
+        return `${pad(i)}:15`;
+      }
+    }
+    return `${pad(HORA_INICIO)}:15 (amanhã)`;
+  }
+
+  function deveAlertar(now) {
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    if (!horarioAtivo(h)) return false;
+    if (h % 2 === 0 && m === 15 && s === 0) {
+      const chave = `${h}:${m}`;
+      if (ultimoAlerta !== chave) {
+        ultimoAlerta = chave;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  let loopVoz = false;
+
+  function falarAgua(loop) {
+    if (!window.speechSynthesis) return;
+    loopVoz = !!loop;
+    window.speechSynthesis.cancel();
+    const falar = () => {
+      const msg = new SpeechSynthesisUtterance('Atenção: Hora de beber água!');
+      msg.lang = 'pt-BR';
+      msg.rate = 0.92;
+      msg.pitch = 1.05;
+      msg.volume = 1;
+      const vozes = window.speechSynthesis.getVoices();
+      const ptBR = vozes.find(v => v.lang === 'pt-BR') || vozes.find(v => v.lang.startsWith('pt')) || null;
+      if (ptBR) msg.voice = ptBR;
+      msg.onend = () => { if (loopVoz) setTimeout(falar, 1200); };
+      window.speechSynthesis.speak(msg);
+    };
+    if (window.speechSynthesis.getVoices().length > 0) { falar(); }
+    else { window.speechSynthesis.onvoiceschanged = falar; }
+  }
+
+  function pararVoz() {
+    loopVoz = false;
+    window.speechSynthesis && window.speechSynthesis.cancel();
+  }
+
+  function fecharAlerta() {
+    if (timerFechamento) { clearTimeout(timerFechamento); timerFechamento = null; }
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('progresso').style.width = '100%';
+    alertaAberto = false;
+  }
+
+  function abrirAlerta() {
+    alertaAberto = true;
+    falarAgua();
+    document.getElementById('overlay').classList.add('show');
+    document.getElementById('progresso').style.transition = 'none';
+    document.getElementById('progresso').style.width = '100%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('progresso').style.transition = `width ${TIMEOUT_ALERTA_MS}ms linear`;
+        document.getElementById('progresso').style.width = '0%';
+      });
+    });
+    timerFechamento = setTimeout(() => {
+      fecharAlerta();
+    }, TIMEOUT_ALERTA_MS);
+  }
+
+  function tick() {
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    const diaSem = now.getDay(), dia = now.getDate(), mes = now.getMonth(), ano = now.getFullYear();
+
+    document.getElementById('hh').textContent = pad(h);
+    document.getElementById('mm').textContent = pad(m);
+    document.getElementById('ss').textContent = pad(s);
+
+    document.getElementById('diaSemana').textContent = diasSemana[diaSem];
+    document.getElementById('dataCompleta').textContent = `${pad(dia)} / ${pad(mes+1)} / ${ano}`;
+
+    const p = getPeriodo(h);
+    document.getElementById('periodoTexto').textContent = p.texto;
+    document.getElementById('periodoIcon').textContent = p.icon;
+
+    const proxEl = document.getElementById('proxAgua');
+    if (horarioAtivo(h)) {
+      proxEl.textContent = proximoAlerta(now);
+      proxEl.style.opacity = '1';
+    } else {
+      proxEl.textContent = `${pad(HORA_INICIO)}:15`;
+      proxEl.style.opacity = '0.4';
+    }
+
+    if (!alertaAberto && deveAlertar(now)) {
+      abrirAlerta();
+    }
+  }
+
+  function criarEstrelas() {
+    const container = document.getElementById('stars');
+    for (let i = 0; i < 120; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.top = Math.random() * 100 + '%';
+      s.style.setProperty('--d', (2 + Math.random() * 4) + 's');
+      s.style.setProperty('--delay', (Math.random() * 4) + 's');
+      s.style.opacity = Math.random() * 0.6 + 0.1;
+      container.appendChild(s);
+    }
+  }
+
+  criarEstrelas();
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>
