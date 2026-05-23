@@ -129,6 +129,60 @@
     text-transform: uppercase;
   }
 
+  .frase-box {
+    margin-top: 2.5rem;
+    max-width: 600px;
+    text-align: center;
+    padding: 0 1rem;
+    min-height: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .frase-nome {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    color: rgba(255, 215, 0, 0.5);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .frase-texto {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    color: rgba(200, 225, 255, 0.75);
+    line-height: 1.4;
+    font-style: italic;
+    animation: frase-fade 1s ease both;
+  }
+
+  @keyframes frase-fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .frase-dots {
+    display: flex;
+    gap: 6px;
+    margin-top: 0.6rem;
+  }
+
+  .frase-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    transition: background 0.3s;
+  }
+
+  .frase-dot.ativo {
+    background: rgba(255, 215, 0, 0.5);
+  }
+
   .water-bar {
     position: fixed;
     bottom: 24px;
@@ -210,6 +264,158 @@
   .clima-icon {
     font-size: 1.5rem;
   }
+
+  /* QUADRO DE FOTOS */
+  .quadro-fotos {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .quadro-moldura {
+    width: 200px;
+    height: 220px;
+    background: linear-gradient(145deg, #2a1a0a, #5c3a10, #2a1a0a);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow:
+      0 0 0 2px #8B5E2A,
+      0 0 0 4px #3d2008,
+      0 8px 30px rgba(0,0,0,0.7),
+      inset 0 0 8px rgba(0,0,0,0.5);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .quadro-moldura:hover {
+    transform: scale(1.03);
+  }
+
+  .quadro-moldura::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(180,120,40,0.3);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .quadro-foto-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 3px;
+    display: block;
+    animation: foto-fade 0.8s ease both;
+  }
+
+  @keyframes foto-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .quadro-legenda {
+    margin-top: 8px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 10px;
+    font-weight: 300;
+    color: rgba(180,210,255,0.35);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .quadro-dots {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 200px;
+  }
+
+  .quadro-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .quadro-dot.ativo {
+    background: rgba(255, 215, 0, 0.6);
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .lightbox.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .lightbox img {
+    max-width: 88vw;
+    max-height: 88vh;
+    border-radius: 6px;
+    box-shadow: 0 0 60px rgba(0,0,0,0.8);
+    object-fit: contain;
+    animation: foto-fade 0.3s ease both;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 28px;
+    color: rgba(255,255,255,0.5);
+    font-size: 2rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .lightbox-close:hover { color: #FFD700; }
+
+  .lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 2rem;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .lightbox-nav:hover { background: rgba(255,215,0,0.15); color: #FFD700; }
+  .lightbox-nav.prev { left: 16px; }
+  .lightbox-nav.next { right: 16px; }
 
   .overlay {
     position: fixed;
@@ -380,6 +586,12 @@
     <span class="periodo-icon" id="periodoIcon">🌤️</span>
     <span class="periodo-texto" id="periodoTexto">Manhã</span>
   </div>
+
+  <div class="frase-box">
+    <div class="frase-nome" id="fraseNome">💛 Para você, Franci</div>
+    <div class="frase-texto" id="fraseTexto"></div>
+    <div class="frase-dots" id="fraseDots"></div>
+  </div>
 </div>
 
 <div class="water-bar">
@@ -387,6 +599,23 @@
   <span class="water-bar-label">Próxima água:</span>
   <span class="water-bar-next" id="proxAgua">--:--</span>
 
+</div>
+
+<!-- QUADRO DE FOTOS -->
+<div class="quadro-fotos" id="quadroFotos">
+  <div class="quadro-moldura" id="quadroMoldura" onclick="abrirLightbox()">
+    <img class="quadro-foto-img" id="quadroImg" src="" alt="Foto da família">
+  </div>
+  <div class="quadro-legenda" id="quadroLegenda">Família</div>
+  <div class="quadro-dots" id="quadroDots"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="fecharLightbox()">✕</button>
+  <button class="lightbox-nav prev" onclick="navLightbox(-1)">‹</button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav next" onclick="navLightbox(1)">›</button>
 </div>
 
 <!-- OVERLAY ÁGUA -->
@@ -659,6 +888,82 @@
     99: ['⛈️','Trovoada c/ granizo'],
   };
 
+  // =============================================
+  // FOTOS — adicione os nomes dos arquivos aqui
+  // Coloque as imagens na pasta imagens/
+  // =============================================
+  const fotosBase = [
+    '1.jpg',
+    'imagem1.jpg','imagem2.jpg','imagem3.jpg','imagem4.jpg','imagem5.jpg',
+    'imagem6.jpg','imagem7.jpg','imagem8.jpg','imagem9.jpg','imagem10.jpg',
+    'imagem11.jpg','imagem12.jpg','imagem13.jpg','imagem14.jpg','imagem15.jpg',
+    'imagem16.jpg','imagem17.jpg','imagem18.jpg','imagem19.jpg','imagem20.jpg',
+    'imagem21.jpg','imagem22.jpg',
+  ];
+
+  // Embaralha aleatoriamente
+  const fotosEmbaralhadas = fotosBase
+    .map(f => ({ src: 'imagens/' + f, legenda: 'Família', sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort);
+
+  const fotos = fotosEmbaralhadas;
+
+  let fotoAtual = 0;
+  let timerFoto = null;
+  const INTERVALO_FOTO = 8000;
+
+  function mostrarFoto(idx) {
+    if (!fotos.length) return;
+    fotoAtual = idx;
+    const f = fotos[idx];
+    const img = document.getElementById('quadroImg');
+    img.style.animation = 'none';
+    img.offsetHeight;
+    img.style.animation = 'foto-fade 0.8s ease both';
+    img.src = f.src;
+    document.getElementById('quadroLegenda').textContent = f.legenda + ' · ' + (idx+1) + '/' + fotos.length;
+    const dots = document.getElementById('quadroDots');
+    dots.innerHTML = fotos.map((_, i) =>
+      `<div class="quadro-dot ${i === idx ? 'ativo' : ''}" onclick="event.stopPropagation();clearInterval(timerFoto);mostrarFoto(${i});timerFoto=setInterval(proximaFoto,INTERVALO_FOTO);"></div>`
+    ).join('');
+  }
+
+  function proximaFoto() {
+    mostrarFoto((fotoAtual + 1) % fotos.length);
+  }
+
+  function abrirLightbox() {
+    document.getElementById('lightboxImg').src = fotos[fotoAtual].src;
+    document.getElementById('lightbox').classList.add('show');
+  }
+
+  function fecharLightbox() {
+    document.getElementById('lightbox').classList.remove('show');
+  }
+
+  function navLightbox(dir) {
+    fotoAtual = (fotoAtual + dir + fotos.length) % fotos.length;
+    document.getElementById('lightboxImg').src = fotos[fotoAtual].src;
+    mostrarFoto(fotoAtual);
+  }
+
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) fecharLightbox();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    const lb = document.getElementById('lightbox');
+    if (!lb.classList.contains('show')) return;
+    if (e.key === 'Escape') fecharLightbox();
+    if (e.key === 'ArrowRight') navLightbox(1);
+    if (e.key === 'ArrowLeft') navLightbox(-1);
+  });
+
+  if (fotos.length > 0) {
+    mostrarFoto(0);
+    if (fotos.length > 1) timerFoto = setInterval(proximaFoto, INTERVALO_FOTO);
+  }
+
   async function atualizarClima() {
     try {
       // Coordenadas do Rio de Janeiro - Tijuca
@@ -678,6 +983,99 @@
       document.getElementById('climaDesc').textContent = 'Sem dados';
     }
   }
+
+  const frasesGrupo = [
+    // FRANCI
+    { nome: "💛 Para você, Franci", frase: "Franci, você é muito amada por todos nós!" },
+    { nome: "💛 Para você, Franci", frase: "Que bom ter você aqui, Franci. A família inteira te adora." },
+    { nome: "💛 Para você, Franci", frase: "Franci, você tem um sorriso que ilumina qualquer lugar." },
+    { nome: "💛 Para você, Franci", frase: "Você está segura e bem cuidada, Franci. Pode ficar tranquila." },
+    { nome: "💛 Para você, Franci", frase: "O Vitor tem tanto orgulho de ter você como avó, Franci!" },
+    { nome: "💛 Para você, Franci", frase: "Franci, que alegria a sua presença na nossa vida!" },
+    { nome: "💛 Para você, Franci", frase: "Você é a base de tudo, Franci. Que mulher incrível." },
+    { nome: "💛 Para você, Franci", frase: "Estamos sempre com você, Franci. Pode contar com a gente." },
+    { nome: "💛 Para você, Franci", frase: "Franci, sua presença alegra todo mundo ao redor." },
+    { nome: "💛 Para você, Franci", frase: "Pode confiar, Franci. A família cuida de você com muito amor." },
+    { nome: "💛 Para você, Franci", frase: "Você ensinou tanto pra gente, Franci. Que exemplo de vida!" },
+    { nome: "💛 Para você, Franci", frase: "Hoje é um bom dia, Franci! Aproveite com carinho." },
+    { nome: "💛 Para você, Franci", frase: "Você nunca está sozinha, Franci. Estamos sempre aqui." },
+    { nome: "💛 Para você, Franci", frase: "Franci, seu coração bondoso é o maior presente que você nos deu." },
+    { nome: "💛 Para você, Franci", frase: "Temos tanto orgulho de você, Franci!" },
+    { nome: "💛 Para você, Franci", frase: "Cada dia com você é um presente, Franci." },
+    { nome: "💛 Para você, Franci", frase: "Respire fundo, Franci. Tudo está bem por aqui." },
+    { nome: "💛 Para você, Franci", frase: "Franci, você é cheia de luz e de amor." },
+    { nome: "💛 Para você, Franci", frase: "Que saudade boa de estar perto de você, Franci!" },
+    { nome: "💛 Para você, Franci", frase: "Franci, você merece todo o carinho do mundo." },
+    { nome: "💛 Para você, Franci", frase: "Seu sorriso, Franci, é o que mais alegra o nosso dia." },
+    { nome: "💛 Para você, Franci", frase: "Franci, você é amada hoje, amanhã e sempre." },
+    { nome: "💛 Para você, Franci", frase: "Que bênção você é pra essa família, Franci!" },
+    { nome: "💛 Para você, Franci", frase: "Fique tranquila, Franci. A gente está aqui pertinho." },
+    { nome: "💛 Para você, Franci", frase: "Tudo que você plantou na vida da gente floresceu lindo, Franci." },
+    { nome: "💛 Para você, Franci", frase: "O Vitor te ama muito, Franci. Que avó especial você é!" },
+    { nome: "💛 Para você, Franci", frase: "A gente pensa em você todo dia, Franci. Com muito amor." },
+    { nome: "💛 Para você, Franci", frase: "Franci, o Enrico, o Juninho e a Mariana têm tanto orgulho de ser seus filhos!" },
+    // MARIO HUGO
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você é muito amado por toda a família!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Que orgulho imenso temos de você, Mario Hugo!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua experiência de vida é um tesouro pra gente." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Você é muito amado, Mario Hugo. Isso nunca vai mudar." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, cada história sua é uma lição que a gente guarda no coração." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Que bom ter você do nosso lado, Mario Hugo!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você construiu uma família linda. Olha o que a gente virou!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Você é forte, Mario Hugo. Sempre foi e sempre será." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua presença nos dá segurança e tranquilidade." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Hoje é um ótimo dia, Mario Hugo. Aproveite cada momento!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você é o pilar desta família. Que homem admirável." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Que sorte a nossa de ter você, Mario Hugo!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua vida é uma história de superação e amor." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Você merece todo o respeito e carinho do mundo, Mario Hugo." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, continue sendo essa luz que você sempre foi." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Que dia bonito pra aproveitar, Mario Hugo!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua sabedoria nos guia sempre. Obrigado por isso." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Você é inspiração pra toda a família, Mario Hugo." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, obrigado por tudo que você já fez pela gente." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Fique bem, Mario Hugo. Todo mundo aqui torce muito por você." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você tem muito ainda a curtir com a família!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Que bênção é a sua vida, Mario Hugo." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você é amado hoje e sempre. Sem exceção." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Descanse com tranquilidade, Mario Hugo. A gente está aqui." },
+    { nome: "💙 Para você, Mario Hugo", frase: "O Vitor tem muito orgulho de você, Mario Hugo. Que avô incrível!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, o Enrico, o Juninho e a Mariana têm muito orgulho de ser seus filhos." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Tudo que você ensinou, Mario Hugo, vive no coração de cada um de nós." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, a gente pensa em você todo dia. Com muito amor e gratidão." },
+  ];
+
+  let fraseAtual = 0;
+  const INTERVALO_FRASE = 12000;
+
+  function mostrarFrase(idx) {
+    fraseAtual = idx;
+    const item = frasesGrupo[idx];
+    const elNome = document.getElementById('fraseNome');
+    const elTexto = document.getElementById('fraseTexto');
+    elTexto.style.animation = 'none';
+    elNome.style.animation = 'none';
+    elTexto.offsetHeight;
+    elTexto.style.animation = 'frase-fade 1s ease both';
+    elNome.style.animation = 'frase-fade 1s ease both';
+    elNome.textContent = item.nome;
+    elTexto.textContent = '“' + item.frase + '”';
+    const dots = document.getElementById('fraseDots');
+    dots.innerHTML = frasesGrupo.map((_, i) =>
+      `<div class="frase-dot ${i === idx ? 'ativo' : ''}"></div>`
+    ).join('');
+    dots.querySelectorAll('.frase-dot').forEach((d, i) => {
+      d.style.cursor = 'pointer';
+      d.onclick = () => { clearInterval(timerFrase); mostrarFrase(i); timerFrase = setInterval(proximaFrase, INTERVALO_FRASE); };
+    });
+  }
+
+  function proximaFrase() {
+    mostrarFrase((fraseAtual + 1) % frasesGrupo.length);
+  }
+
+  mostrarFrase(Math.floor(Math.random() * frasesGrupo.length));
+  let timerFrase = setInterval(proximaFrase, INTERVALO_FRASE);
 
   atualizarClima();
   setInterval(atualizarClima, 10 * 60 * 1000); // atualiza a cada 10 min
