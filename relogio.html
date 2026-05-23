@@ -312,9 +312,10 @@
   .quadro-foto-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 3px;
     display: block;
+    background: #0a0a0a;
     animation: foto-fade 0.8s ease both;
   }
 
@@ -381,6 +382,7 @@
     border-radius: 6px;
     box-shadow: 0 0 60px rgba(0,0,0,0.8);
     object-fit: contain;
+    background: #0a0a0a;
     animation: foto-fade 0.3s ease both;
   }
 
@@ -892,21 +894,28 @@
   // FOTOS — adicione os nomes dos arquivos aqui
   // Coloque as imagens na pasta imagens/
   // =============================================
-  const fotosBase = [
-    '1.jpg',
-    'imagem1.jpg','imagem2.jpg','imagem3.jpg','imagem4.jpg','imagem5.jpg',
-    'imagem6.jpg','imagem7.jpg','imagem8.jpg','imagem9.jpg','imagem10.jpg',
-    'imagem11.jpg','imagem12.jpg','imagem13.jpg','imagem14.jpg','imagem15.jpg',
-    'imagem16.jpg','imagem17.jpg','imagem18.jpg','imagem19.jpg','imagem20.jpg',
-    'imagem21.jpg','imagem22.jpg',
-  ];
+  // Lê a lista de fotos do arquivo imagens/fotos.txt
+  // Para adicionar fotos novas: coloque o arquivo em imagens/ e adicione o nome no fotos.txt
+  const fotos = [];
 
-  // Embaralha aleatoriamente
-  const fotosEmbaralhadas = fotosBase
-    .map(f => ({ src: 'imagens/' + f, legenda: 'Família', sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort);
-
-  const fotos = fotosEmbaralhadas;
+  async function carregarFotos() {
+    try {
+      const res = await fetch('imagens/fotos.txt?v=' + Date.now());
+      const txt = await res.text();
+      const nomes = txt.split('\n')
+        .map(l => l.trim())
+        .filter(l => l.length > 0 && !l.startsWith('#'));
+      // Embaralha aleatoriamente
+      nomes.sort(() => Math.random() - 0.5);
+      nomes.forEach(nome => fotos.push({ src: 'imagens/' + nome, legenda: 'Família' }));
+      if (fotos.length > 0) {
+        mostrarFoto(0);
+        if (fotos.length > 1) timerFoto = setInterval(proximaFoto, INTERVALO_FOTO);
+      }
+    } catch(e) {
+      console.warn('fotos.txt não encontrado:', e);
+    }
+  }
 
   let fotoAtual = 0;
   let timerFoto = null;
@@ -959,10 +968,7 @@
     if (e.key === 'ArrowLeft') navLightbox(-1);
   });
 
-  if (fotos.length > 0) {
-    mostrarFoto(0);
-    if (fotos.length > 1) timerFoto = setInterval(proximaFoto, INTERVALO_FOTO);
-  }
+  carregarFotos();
 
   async function atualizarClima() {
     try {
@@ -985,64 +991,78 @@
   }
 
   const frasesGrupo = [
-    // FRANCI
-    { nome: "💛 Para você, Franci", frase: "Franci, você é muito amada por todos nós!" },
-    { nome: "💛 Para você, Franci", frase: "Que bom ter você aqui, Franci. A família inteira te adora." },
-    { nome: "💛 Para você, Franci", frase: "Franci, você tem um sorriso que ilumina qualquer lugar." },
-    { nome: "💛 Para você, Franci", frase: "Você está segura e bem cuidada, Franci. Pode ficar tranquila." },
-    { nome: "💛 Para você, Franci", frase: "O Vitor tem tanto orgulho de ter você como avó, Franci!" },
-    { nome: "💛 Para você, Franci", frase: "Franci, que alegria a sua presença na nossa vida!" },
-    { nome: "💛 Para você, Franci", frase: "Você é a base de tudo, Franci. Que mulher incrível." },
-    { nome: "💛 Para você, Franci", frase: "Estamos sempre com você, Franci. Pode contar com a gente." },
-    { nome: "💛 Para você, Franci", frase: "Franci, sua presença alegra todo mundo ao redor." },
-    { nome: "💛 Para você, Franci", frase: "Pode confiar, Franci. A família cuida de você com muito amor." },
-    { nome: "💛 Para você, Franci", frase: "Você ensinou tanto pra gente, Franci. Que exemplo de vida!" },
-    { nome: "💛 Para você, Franci", frase: "Hoje é um bom dia, Franci! Aproveite com carinho." },
-    { nome: "💛 Para você, Franci", frase: "Você nunca está sozinha, Franci. Estamos sempre aqui." },
-    { nome: "💛 Para você, Franci", frase: "Franci, seu coração bondoso é o maior presente que você nos deu." },
-    { nome: "💛 Para você, Franci", frase: "Temos tanto orgulho de você, Franci!" },
-    { nome: "💛 Para você, Franci", frase: "Cada dia com você é um presente, Franci." },
-    { nome: "💛 Para você, Franci", frase: "Respire fundo, Franci. Tudo está bem por aqui." },
-    { nome: "💛 Para você, Franci", frase: "Franci, você é cheia de luz e de amor." },
-    { nome: "💛 Para você, Franci", frase: "Que saudade boa de estar perto de você, Franci!" },
-    { nome: "💛 Para você, Franci", frase: "Franci, você merece todo o carinho do mundo." },
-    { nome: "💛 Para você, Franci", frase: "Seu sorriso, Franci, é o que mais alegra o nosso dia." },
-    { nome: "💛 Para você, Franci", frase: "Franci, você é amada hoje, amanhã e sempre." },
-    { nome: "💛 Para você, Franci", frase: "Que bênção você é pra essa família, Franci!" },
-    { nome: "💛 Para você, Franci", frase: "Fique tranquila, Franci. A gente está aqui pertinho." },
-    { nome: "💛 Para você, Franci", frase: "Tudo que você plantou na vida da gente floresceu lindo, Franci." },
-    { nome: "💛 Para você, Franci", frase: "O Vitor te ama muito, Franci. Que avó especial você é!" },
-    { nome: "💛 Para você, Franci", frase: "A gente pensa em você todo dia, Franci. Com muito amor." },
+    // FRANCI — filhos
+    { nome: "💛 Para você, Franci", frase: "Seus filhos te amam muito, Franci. Pode ter certeza disso." },
     { nome: "💛 Para você, Franci", frase: "Franci, o Enrico, o Juninho e a Mariana têm tanto orgulho de ser seus filhos!" },
-    // MARIO HUGO
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você é muito amado por toda a família!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Que orgulho imenso temos de você, Mario Hugo!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua experiência de vida é um tesouro pra gente." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Você é muito amado, Mario Hugo. Isso nunca vai mudar." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, cada história sua é uma lição que a gente guarda no coração." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Que bom ter você do nosso lado, Mario Hugo!" },
+    { nome: "💛 Para você, Franci", frase: "Seus filhos pensam em você todo dia, Franci. Com muito amor." },
+    { nome: "💛 Para você, Franci", frase: "Pode confiar, Franci. Seus filhos cuidam de você com carinho." },
+    { nome: "💛 Para você, Franci", frase: "Você ensinou tanto aos seus filhos, Franci. Que exemplo de mãe!" },
+    { nome: "💛 Para você, Franci", frase: "Tudo que você plantou na vida dos seus filhos floresceu lindo, Franci." },
+    { nome: "💛 Para você, Franci", frase: "Seus filhos rezam por você todos os dias, Franci." },
+    // FRANCI — marido
+    { nome: "💛 Para você, Franci", frase: "O Mario Hugo está do seu lado, Franci. Vocês dois são uma história linda." },
+    { nome: "💛 Para você, Franci", frase: "Franci, o Mario Hugo cuida de você com tanto amor. Que parceria bonita!" },
+    { nome: "💛 Para você, Franci", frase: "Juntos há tantos anos, Franci e Mario Hugo. Que exemplo de amor!" },
+    { nome: "💛 Para você, Franci", frase: "O Mario Hugo está sempre pertinho, Franci. Você não está sozinha." },
+    // FRANCI — neto
+    { nome: "💛 Para você, Franci", frase: "O Vitor te ama tanto, Franci! Que avó abençoada você é." },
+    { nome: "💛 Para você, Franci", frase: "Franci, o Vitor tem tanto orgulho de ter você como avó!" },
+    { nome: "💛 Para você, Franci", frase: "Que alegria o Vitor sente quando está perto de você, Franci!" },
+    // FRANCI — amigos e carinho geral
+    { nome: "💛 Para você, Franci", frase: "Franci, quem te conhece te ama. Você cativa as pessoas assim." },
+    { nome: "💛 Para você, Franci", frase: "Seus amigos guardam você no coração, Franci." },
+    { nome: "💛 Para você, Franci", frase: "Franci, você deixou marcas bonitas em tanta gente ao longo da vida." },
+    { nome: "💛 Para você, Franci", frase: "Você está segura e bem cuidada, Franci. Pode ficar tranquila." },
+    { nome: "💛 Para você, Franci", frase: "Respire fundo, Franci. Tudo está bem por aqui." },
+    { nome: "💛 Para você, Franci", frase: "Franci, você tem um sorriso que ilumina qualquer lugar." },
+    { nome: "💛 Para você, Franci", frase: "Hoje é um bom dia, Franci! Aproveite com carinho." },
+    { nome: "💛 Para você, Franci", frase: "Franci, você é amada hoje, amanhã e sempre." },
+    { nome: "💛 Para você, Franci", frase: "Que bênção você é pra todo mundo que te conhece, Franci!" },
+    // FRANCI — espírita kardecista
+    { nome: "💛 Para você, Franci", frase: "Franci, bons espíritos cercam você com luz e proteção." },
+    { nome: "💛 Para você, Franci", frase: "A paz de Deus está em você, Franci. Sinta essa luz." },
+    { nome: "💛 Para você, Franci", frase: "Franci, cada dia é uma oportunidade de crescimento da alma. Que graça!" },
+    { nome: "💛 Para você, Franci", frase: "Deus e os bons espíritos nunca te abandonam, Franci." },
+    { nome: "💛 Para você, Franci", frase: "Franci, a sua alma é linda e cheia de luz. Isso ninguém tira." },
+    { nome: "💛 Para você, Franci", frase: "Como dizia Allan Kardec: amai-vos uns aos outros. E você, Franci, sempre fez isso." },
+    { nome: "💛 Para você, Franci", frase: "Franci, fora do corpo ou nele, o amor que você doa volta pra você multiplicado." },
+    { nome: "💛 Para você, Franci", frase: "A vida é contínua, Franci. Cada momento vivido com amor é eterno." },
+
+    // MARIO HUGO — filhos
+    { nome: "💙 Para você, Mario Hugo", frase: "Seus filhos te amam muito, Mario Hugo. Isso você pode ter certeza." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, o Enrico, o Juninho e a Mariana têm tanto orgulho de ser seus filhos!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Seus filhos pensam em você todo dia, Mario Hugo. Com muito amor e gratidão." },
     { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você construiu uma família linda. Olha o que a gente virou!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Você é forte, Mario Hugo. Sempre foi e sempre será." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua presença nos dá segurança e tranquilidade." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Hoje é um ótimo dia, Mario Hugo. Aproveite cada momento!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você é o pilar desta família. Que homem admirável." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Que sorte a nossa de ter você, Mario Hugo!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua vida é uma história de superação e amor." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Tudo que você ensinou, Mario Hugo, vive no coração dos seus filhos." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Seus filhos rezam por você todo dia, Mario Hugo." },
+    // MARIO HUGO — esposa
+    { nome: "💙 Para você, Mario Hugo", frase: "A Franci está do seu lado, Mario Hugo. Que amor bonito o de vocês dois." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você e a Franci são um exemplo de amor pra toda a família." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Juntos há tantos anos, Mario Hugo e Franci. Que história linda!" },
+    // MARIO HUGO — neto
+    { nome: "💙 Para você, Mario Hugo", frase: "O Vitor tem muito orgulho de você, Mario Hugo. Que avô incrível!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, o Vitor guarda cada história sua no coração." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Que alegria o Vitor sente perto de você, Mario Hugo!" },
+    // MARIO HUGO — amigos e carinho geral
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, quem te conhece te admira. Você é assim." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Seus amigos guardam você no coração, Mario Hugo." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você deixou marcas bonitas em tanta gente ao longo da vida." },
     { nome: "💙 Para você, Mario Hugo", frase: "Você merece todo o respeito e carinho do mundo, Mario Hugo." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, continue sendo essa luz que você sempre foi." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Que dia bonito pra aproveitar, Mario Hugo!" },
+    { nome: "💙 Para você, Mario Hugo", frase: "Que sorte a nossa de ter você, Mario Hugo!" },
     { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua sabedoria nos guia sempre. Obrigado por isso." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Você é inspiração pra toda a família, Mario Hugo." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, obrigado por tudo que você já fez pela gente." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Fique bem, Mario Hugo. Todo mundo aqui torce muito por você." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você tem muito ainda a curtir com a família!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Que bênção é a sua vida, Mario Hugo." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Hoje é um ótimo dia, Mario Hugo. Aproveite cada momento!" },
     { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você é amado hoje e sempre. Sem exceção." },
     { nome: "💙 Para você, Mario Hugo", frase: "Descanse com tranquilidade, Mario Hugo. A gente está aqui." },
-    { nome: "💙 Para você, Mario Hugo", frase: "O Vitor tem muito orgulho de você, Mario Hugo. Que avô incrível!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, o Enrico, o Juninho e a Mariana têm muito orgulho de ser seus filhos." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Tudo que você ensinou, Mario Hugo, vive no coração de cada um de nós." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, a gente pensa em você todo dia. Com muito amor e gratidão." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua vida é uma história de superação e muito amor." },
+    // MARIO HUGO — espírita kardecista
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, bons espíritos cercam você com luz e proteção." },
+    { nome: "💙 Para você, Mario Hugo", frase: "A paz de Deus está com você, Mario Hugo. Sinta essa presença." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, cada experiência vivida com amor fortalece a sua alma." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Deus e os bons espíritos nunca te abandonam, Mario Hugo." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, a sua alma é rica de bondade. Isso você construiu ao longo da vida toda." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Como dizia Chico Xavier: ninguém perde o que deu com amor. Você deu muito, Mario Hugo." },
+    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, o bem que você fez na vida continua iluminando quem está ao seu redor." },
+    { nome: "💙 Para você, Mario Hugo", frase: "A vida é uma escola, Mario Hugo. E você sempre foi um ótimo aluno." },
   ];
 
   let fraseAtual = 0;
