@@ -166,6 +166,51 @@
     opacity: 0.5;
   }
 
+  .clima-bar {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 7px 18px 7px 12px;
+    z-index: 1;
+  }
+
+  .clima-temp {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: #FFD700;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+
+  .clima-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .clima-desc {
+    font-size: 11px;
+    color: rgba(180, 210, 255, 0.7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .clima-umid {
+    font-size: 10px;
+    color: rgba(140, 180, 255, 0.45);
+    letter-spacing: 0.06em;
+  }
+
+  .clima-icon {
+    font-size: 1.5rem;
+  }
+
   .overlay {
     position: fixed;
     inset: 0;
@@ -312,6 +357,15 @@
 
 <div class="stars" id="stars"></div>
 
+<div class="clima-bar">
+  <span class="clima-icon" id="climaIcon">🌡️</span>
+  <span class="clima-temp" id="climaTemp">--°</span>
+  <div class="clima-info">
+    <span class="clima-desc" id="climaDesc">Carregando...</span>
+    <span class="clima-umid" id="climaUmid">Rio de Janeiro</span>
+  </div>
+</div>
+
 <div class="container">
   <div class="header">
     <div class="dia-semana" id="diaSemana"></div>
@@ -335,6 +389,7 @@
 
 </div>
 
+<!-- OVERLAY ÁGUA -->
 <div class="overlay" id="overlay">
   <div class="alert-box">
     <div class="alert-water-icon">💧</div>
@@ -355,6 +410,25 @@
       <div style="font-size:0.7rem;color:rgba(140,180,255,0.4);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px;">Fecha automaticamente em 10 min</div>
       <div style="background:rgba(255,255,255,0.07);border-radius:50px;height:3px;overflow:hidden;">
         <div id="progresso" style="height:100%;background:rgba(74,158,255,0.5);border-radius:50px;width:100%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY REMÉDIO -->
+<div class="overlay" id="overlay-remedio">
+  <div class="alert-box" style="border-color:rgba(100,220,130,0.4);box-shadow:0 0 60px rgba(80,200,100,0.15),0 0 120px rgba(80,200,100,0.05);">
+    <div class="alert-water-icon">💊</div>
+    <div class="alert-atencao" style="color:rgba(100,220,130,0.8);">⚠ Atenção</div>
+    <div class="alert-titulo" style="color:#7fffaa;text-shadow:0 0 30px rgba(127,255,170,0.3);">Hora do Remédio!</div>
+    <div id="remedio-lista" style="margin:1rem 0 1.5rem;text-align:left;"></div>
+    <button class="btn-ok" onclick="fecharRemedio()" style="border-color:#7fffaa;color:#7fffaa;text-shadow:0 0 20px rgba(127,255,170,0.3);">
+      <span>✓ &nbsp; OK</span>
+    </button>
+    <div style="margin-top:1.5rem;">
+      <div style="font-size:0.7rem;color:rgba(140,255,180,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px;">Fecha automaticamente em 10 min</div>
+      <div style="background:rgba(255,255,255,0.07);border-radius:50px;height:3px;overflow:hidden;">
+        <div id="progresso-remedio" style="height:100%;background:rgba(80,200,100,0.5);border-radius:50px;width:100%;"></div>
       </div>
     </div>
   </div>
@@ -396,6 +470,23 @@
     return `${pad(HORA_INICIO)}:15 (amanhã)`;
   }
 
+  // Configuração dos remédios por horário
+  const REMEDIOS = {
+    '17:00': [
+      { nome: 'Remedio01', qtd: '1 comprimido' },
+      { nome: 'Remedio02', qtd: '1 comprimido' },
+    ],
+    '19:00': [
+      { nome: 'Remedio01', qtd: '1 comprimido' },
+      { nome: 'Remedio02', qtd: '1 comprimido' },
+      { nome: 'Remedio03', qtd: '2 comprimidos' },
+    ],
+  };
+
+  let ultimoRemedio = null;
+  let timerFechamentoRemedio = null;
+  let remedioAberto = false;
+
   function deveAlertar(now) {
     const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
     if (!horarioAtivo(h)) return false;
@@ -409,14 +500,25 @@
     return false;
   }
 
+  function deveAvisarRemedio(now) {
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    if (s !== 0) return null;
+    const chave = `${pad(h)}:${pad(m)}`;
+    if (REMEDIOS[chave] && ultimoRemedio !== chave) {
+      ultimoRemedio = chave;
+      return REMEDIOS[chave];
+    }
+    return null;
+  }
+
   let loopVoz = false;
 
-  function falarAgua(loop) {
+  function falarTexto(texto) {
     if (!window.speechSynthesis) return;
-    loopVoz = !!loop;
+    loopVoz = false;
     window.speechSynthesis.cancel();
     const falar = () => {
-      const msg = new SpeechSynthesisUtterance('Atenção: Hora de beber água!');
+      const msg = new SpeechSynthesisUtterance(texto);
       msg.lang = 'pt-BR';
       msg.rate = 0.92;
       msg.pitch = 1.05;
@@ -424,16 +526,55 @@
       const vozes = window.speechSynthesis.getVoices();
       const ptBR = vozes.find(v => v.lang === 'pt-BR') || vozes.find(v => v.lang.startsWith('pt')) || null;
       if (ptBR) msg.voice = ptBR;
-      msg.onend = () => { if (loopVoz) setTimeout(falar, 1200); };
       window.speechSynthesis.speak(msg);
     };
     if (window.speechSynthesis.getVoices().length > 0) { falar(); }
     else { window.speechSynthesis.onvoiceschanged = falar; }
   }
 
+  function falarAgua() { falarTexto('Atenção: Hora de beber água!'); }
+
+  function falarRemedio(lista) {
+    const nomes = lista.map(r => `${r.nome}, ${r.qtd}`).join('. ');
+    falarTexto(`Atenção: Hora do remédio! ${nomes}`);
+  }
+
   function pararVoz() {
     loopVoz = false;
     window.speechSynthesis && window.speechSynthesis.cancel();
+  }
+
+  function fecharRemedio() {
+    if (timerFechamentoRemedio) { clearTimeout(timerFechamentoRemedio); timerFechamentoRemedio = null; }
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    document.getElementById('overlay-remedio').classList.remove('show');
+    document.getElementById('progresso-remedio').style.width = '100%';
+    remedioAberto = false;
+  }
+
+  function abrirRemedio(lista) {
+    remedioAberto = true;
+    // Monta lista visual
+    const el = document.getElementById('remedio-lista');
+    el.innerHTML = lista.map(r => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:6px;background:rgba(127,255,170,0.06);border:0.5px solid rgba(127,255,170,0.2);border-radius:10px;">
+        <span style="font-size:1.3rem;">💊</span>
+        <div>
+          <div style="font-family:'Barlow',sans-serif;font-weight:600;font-size:1rem;color:#7fffaa;letter-spacing:0.05em;">${r.nome}</div>
+          <div style="font-family:'Barlow',sans-serif;font-weight:300;font-size:0.85rem;color:rgba(180,255,210,0.6);">${r.qtd}</div>
+        </div>
+      </div>`).join('');
+    falarRemedio(lista);
+    document.getElementById('overlay-remedio').classList.add('show');
+    document.getElementById('progresso-remedio').style.transition = 'none';
+    document.getElementById('progresso-remedio').style.width = '100%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('progresso-remedio').style.transition = `width ${TIMEOUT_ALERTA_MS}ms linear`;
+        document.getElementById('progresso-remedio').style.width = '0%';
+      });
+    });
+    timerFechamentoRemedio = setTimeout(fecharRemedio, TIMEOUT_ALERTA_MS);
   }
 
   function fecharAlerta() {
@@ -489,7 +630,57 @@
     if (!alertaAberto && deveAlertar(now)) {
       abrirAlerta();
     }
+
+    const listaRemedio = deveAvisarRemedio(now);
+    if (!remedioAberto && listaRemedio) {
+      abrirRemedio(listaRemedio);
+    }
   }
+
+  // Mapa de código de clima -> ícone + descrição
+  const WMO = {
+    0:  ['☀️','Céu limpo'],
+    1:  ['🌤️','Poucas nuvens'],
+    2:  ['⛅','Parcialmente nublado'],
+    3:  ['☁️','Nublado'],
+    45: ['🌫️','Neblina'],
+    48: ['🌫️','Neblina'],
+    51: ['🌦️','Garoa leve'],
+    53: ['🌦️','Garoa'],
+    55: ['🌧️','Garoa forte'],
+    61: ['🌧️','Chuva leve'],
+    63: ['🌧️','Chuva'],
+    65: ['🌧️','Chuva forte'],
+    80: ['🌦️','Pancadas'],
+    81: ['⛈️','Pancadas'],
+    82: ['⛈️','Temporal'],
+    95: ['⛈️','Trovoada'],
+    96: ['⛈️','Trovoada c/ granizo'],
+    99: ['⛈️','Trovoada c/ granizo'],
+  };
+
+  async function atualizarClima() {
+    try {
+      // Coordenadas do Rio de Janeiro - Tijuca
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=-22.9229&longitude=-43.2281&current=temperature_2m,relative_humidity_2m,weathercode&timezone=America%2FSao_Paulo';
+      const res = await fetch(url);
+      const data = await res.json();
+      const cur = data.current;
+      const temp = Math.round(cur.temperature_2m);
+      const umid = cur.relative_humidity_2m;
+      const code = cur.weathercode;
+      const [icon, desc] = WMO[code] || ['🌡️', 'Tempo variável'];
+      document.getElementById('climaTemp').textContent = temp + '°C';
+      document.getElementById('climaDesc').textContent = desc;
+      document.getElementById('climaUmid').textContent = `Umidade ${umid}%`;
+      document.getElementById('climaIcon').textContent = icon;
+    } catch(e) {
+      document.getElementById('climaDesc').textContent = 'Sem dados';
+    }
+  }
+
+  atualizarClima();
+  setInterval(atualizarClima, 10 * 60 * 1000); // atualiza a cada 10 min
 
   function criarEstrelas() {
     const container = document.getElementById('stars');
