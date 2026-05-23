@@ -990,80 +990,41 @@
     }
   }
 
-  const frasesGrupo = [
-    // FRANCI — filhos
-    { nome: "💛 Para você, Franci", frase: "Seus filhos te amam muito, Franci. Pode ter certeza disso." },
-    { nome: "💛 Para você, Franci", frase: "Franci, o Enrico, o Juninho e a Mariana têm tanto orgulho de ser seus filhos!" },
-    { nome: "💛 Para você, Franci", frase: "Seus filhos pensam em você todo dia, Franci. Com muito amor." },
-    { nome: "💛 Para você, Franci", frase: "Pode confiar, Franci. Seus filhos cuidam de você com carinho." },
-    { nome: "💛 Para você, Franci", frase: "Você ensinou tanto aos seus filhos, Franci. Que exemplo de mãe!" },
-    { nome: "💛 Para você, Franci", frase: "Tudo que você plantou na vida dos seus filhos floresceu lindo, Franci." },
-    { nome: "💛 Para você, Franci", frase: "Seus filhos rezam por você todos os dias, Franci." },
-    // FRANCI — marido
-    { nome: "💛 Para você, Franci", frase: "O Mario Hugo está do seu lado, Franci. Vocês dois são uma história linda." },
-    { nome: "💛 Para você, Franci", frase: "Franci, o Mario Hugo cuida de você com tanto amor. Que parceria bonita!" },
-    { nome: "💛 Para você, Franci", frase: "Juntos há tantos anos, Franci e Mario Hugo. Que exemplo de amor!" },
-    { nome: "💛 Para você, Franci", frase: "O Mario Hugo está sempre pertinho, Franci. Você não está sozinha." },
-    // FRANCI — neto
-    { nome: "💛 Para você, Franci", frase: "O Vitor te ama tanto, Franci! Que avó abençoada você é." },
-    { nome: "💛 Para você, Franci", frase: "Franci, o Vitor tem tanto orgulho de ter você como avó!" },
-    { nome: "💛 Para você, Franci", frase: "Que alegria o Vitor sente quando está perto de você, Franci!" },
-    // FRANCI — amigos e carinho geral
-    { nome: "💛 Para você, Franci", frase: "Franci, quem te conhece te ama. Você cativa as pessoas assim." },
-    { nome: "💛 Para você, Franci", frase: "Seus amigos guardam você no coração, Franci." },
-    { nome: "💛 Para você, Franci", frase: "Franci, você deixou marcas bonitas em tanta gente ao longo da vida." },
-    { nome: "💛 Para você, Franci", frase: "Você está segura e bem cuidada, Franci. Pode ficar tranquila." },
-    { nome: "💛 Para você, Franci", frase: "Respire fundo, Franci. Tudo está bem por aqui." },
-    { nome: "💛 Para você, Franci", frase: "Franci, você tem um sorriso que ilumina qualquer lugar." },
-    { nome: "💛 Para você, Franci", frase: "Hoje é um bom dia, Franci! Aproveite com carinho." },
-    { nome: "💛 Para você, Franci", frase: "Franci, você é amada hoje, amanhã e sempre." },
-    { nome: "💛 Para você, Franci", frase: "Que bênção você é pra todo mundo que te conhece, Franci!" },
-    // FRANCI — espírita kardecista
-    { nome: "💛 Para você, Franci", frase: "Franci, bons espíritos cercam você com luz e proteção." },
-    { nome: "💛 Para você, Franci", frase: "A paz de Deus está em você, Franci. Sinta essa luz." },
-    { nome: "💛 Para você, Franci", frase: "Franci, cada dia é uma oportunidade de crescimento da alma. Que graça!" },
-    { nome: "💛 Para você, Franci", frase: "Deus e os bons espíritos nunca te abandonam, Franci." },
-    { nome: "💛 Para você, Franci", frase: "Franci, a sua alma é linda e cheia de luz. Isso ninguém tira." },
-    { nome: "💛 Para você, Franci", frase: "Como dizia Allan Kardec: amai-vos uns aos outros. E você, Franci, sempre fez isso." },
-    { nome: "💛 Para você, Franci", frase: "Franci, fora do corpo ou nele, o amor que você doa volta pra você multiplicado." },
-    { nome: "💛 Para você, Franci", frase: "A vida é contínua, Franci. Cada momento vivido com amor é eterno." },
+  const frasesGrupo = [];
 
-    // MARIO HUGO — filhos
-    { nome: "💙 Para você, Mario Hugo", frase: "Seus filhos te amam muito, Mario Hugo. Isso você pode ter certeza." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, o Enrico, o Juninho e a Mariana têm tanto orgulho de ser seus filhos!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Seus filhos pensam em você todo dia, Mario Hugo. Com muito amor e gratidão." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você construiu uma família linda. Olha o que a gente virou!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Tudo que você ensinou, Mario Hugo, vive no coração dos seus filhos." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Seus filhos rezam por você todo dia, Mario Hugo." },
-    // MARIO HUGO — esposa
-    { nome: "💙 Para você, Mario Hugo", frase: "A Franci está do seu lado, Mario Hugo. Que amor bonito o de vocês dois." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você e a Franci são um exemplo de amor pra toda a família." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Juntos há tantos anos, Mario Hugo e Franci. Que história linda!" },
-    // MARIO HUGO — neto
-    { nome: "💙 Para você, Mario Hugo", frase: "O Vitor tem muito orgulho de você, Mario Hugo. Que avô incrível!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, o Vitor guarda cada história sua no coração." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Que alegria o Vitor sente perto de você, Mario Hugo!" },
-    // MARIO HUGO — amigos e carinho geral
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, quem te conhece te admira. Você é assim." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Seus amigos guardam você no coração, Mario Hugo." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você deixou marcas bonitas em tanta gente ao longo da vida." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Você merece todo o respeito e carinho do mundo, Mario Hugo." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Que sorte a nossa de ter você, Mario Hugo!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua sabedoria nos guia sempre. Obrigado por isso." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Hoje é um ótimo dia, Mario Hugo. Aproveite cada momento!" },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, você é amado hoje e sempre. Sem exceção." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Descanse com tranquilidade, Mario Hugo. A gente está aqui." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, sua vida é uma história de superação e muito amor." },
-    // MARIO HUGO — espírita kardecista
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, bons espíritos cercam você com luz e proteção." },
-    { nome: "💙 Para você, Mario Hugo", frase: "A paz de Deus está com você, Mario Hugo. Sinta essa presença." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, cada experiência vivida com amor fortalece a sua alma." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Deus e os bons espíritos nunca te abandonam, Mario Hugo." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, a sua alma é rica de bondade. Isso você construiu ao longo da vida toda." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Como dizia Chico Xavier: ninguém perde o que deu com amor. Você deu muito, Mario Hugo." },
-    { nome: "💙 Para você, Mario Hugo", frase: "Mario Hugo, o bem que você fez na vida continua iluminando quem está ao seu redor." },
-    { nome: "💙 Para você, Mario Hugo", frase: "A vida é uma escola, Mario Hugo. E você sempre foi um ótimo aluno." },
-  ];
+  async function carregarFrases() {
+    async function lerTxt(url) {
+      try {
+        const res = await fetch(url + '?v=' + Date.now());
+        const txt = await res.text();
+        return txt.split('\n')
+          .map(l => l.trim())
+          .filter(l => l.length > 0 && !l.startsWith('#'));
+      } catch(e) { return []; }
+    }
+
+    const [linhasF, linhasM] = await Promise.all([
+      lerTxt('frases-franci.txt'),
+      lerTxt('frases-mario.txt'),
+    ]);
+
+    const franci = linhasF.map(f => ({ nome: "💛 Para você, Franci", frase: f }));
+    const mario  = linhasM.map(f => ({ nome: "💙 Para você, Mario Hugo", frase: f }));
+
+    // Intercala Franci e Mario Hugo, depois embaralha dentro de cada grupo
+    franci.sort(() => Math.random() - 0.5);
+    mario.sort(() => Math.random() - 0.5);
+    const max = Math.max(franci.length, mario.length);
+    for (let i = 0; i < max; i++) {
+      if (i < franci.length) frasesGrupo.push(franci[i]);
+      if (i < mario.length)  frasesGrupo.push(mario[i]);
+    }
+
+    if (frasesGrupo.length > 0) {
+      mostrarFrase(Math.floor(Math.random() * frasesGrupo.length));
+      timerFrase = setInterval(proximaFrase, INTERVALO_FRASE);
+    }
+  }
 
   let fraseAtual = 0;
   const INTERVALO_FRASE = 12000;
@@ -1094,8 +1055,8 @@
     mostrarFrase((fraseAtual + 1) % frasesGrupo.length);
   }
 
-  mostrarFrase(Math.floor(Math.random() * frasesGrupo.length));
-  let timerFrase = setInterval(proximaFrase, INTERVALO_FRASE);
+  let timerFrase = null;
+  carregarFrases();
 
   atualizarClima();
   setInterval(atualizarClima, 10 * 60 * 1000); // atualiza a cada 10 min
