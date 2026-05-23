@@ -1,0 +1,27 @@
+# Lista de fotos da galeria
+# Adicione o nome do arquivo abaixo, uma por linha
+# As fotos devem estar na pasta imagens/
+
+1.jpg
+imagem1.jpg
+imagem2.jpg
+imagem3.jpg
+imagem4.jpg
+imagem5.jpg
+imagem6.jpg
+imagem7.jpg
+imagem8.jpg
+imagem9.jpg
+imagem10.jpg
+imagem11.jpg
+imagem12.jpg
+imagem13.jpg
+imagem14.jpg
+imagem15.jpg
+imagem16.jpg
+imagem17.jpg
+imagem18.jpg
+imagem19.jpg
+imagem20.jpg
+imagem21.jpg
+imagem22.jpg
